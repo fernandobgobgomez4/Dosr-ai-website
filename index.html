@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DOSR-AI — Track. Stack. Optimize.</title>
+  <meta name="description" content="DOSR-AI is a mobile health & fitness tracking app for tracking compounds, stacks, bloodwork, and progress with AI insights." />
+
+  <!-- Favicon: uses the real app icon. Save the icon image into this folder as logo.png -->
+  <link rel="icon" href="logo.png" />
+
+  <style>
+    :root {
+      --bg: #0a0a0b;
+      --bg-soft: #121214;
+      --card: #161618;
+      --border: #232326;
+      --text: #f4f4f5;
+      --text-dim: #a1a1aa;
+      --text-faint: #71717a;
+      --green: #00d97e;
+      --green-soft: rgba(0, 217, 126, 0.12);
+      --radius: 16px;
+      --max: 1080px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    .wrap {
+      width: 100%;
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ---------- Header ---------- */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(10, 10, 11, 0.72);
+      backdrop-filter: saturate(140%) blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      font-size: 17px;
+    }
+    .brand .logo { width: 30px; height: 30px; border-radius: 7px; }
+
+    /*
+      LOGO
+      ----
+      The aperture below is an inline SVG recreation of the DOSR-AI app icon, so
+      the site is fully self-contained (no external image needed).
+
+      To use the real PNG icon instead, drop your file into this folder as
+      "logo.png" and replace each <svg class="logo"> / <svg class="hero-logo">
+      block with:
+        <img class="logo" src="logo.png" alt="DOSR-AI logo" />
+        <img class="hero-logo" src="logo.png" alt="DOSR-AI logo" />
+    */
+
+    /* ---------- Hero ---------- */
+    .hero {
+      text-align: center;
+      padding: 96px 0 72px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: "";
+      position: absolute;
+      top: -160px; left: 50%;
+      transform: translateX(-50%);
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, var(--green-soft) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .hero-logo {
+      width: 104px; height: 104px;
+      margin: 0 auto 28px;
+      position: relative;
+      border-radius: 24px;
+      display: block;
+    }
+    .hero h1 {
+      font-size: clamp(40px, 7vw, 68px);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+      position: relative;
+    }
+    .hero h1 .green { color: var(--green); }
+    .tagline {
+      margin-top: 16px;
+      font-size: clamp(18px, 3vw, 22px);
+      font-weight: 600;
+      color: var(--green);
+      letter-spacing: 0.01em;
+      position: relative;
+    }
+    .hero p.sub {
+      margin: 22px auto 0;
+      max-width: 620px;
+      font-size: clamp(16px, 2.4vw, 18px);
+      color: var(--text-dim);
+      position: relative;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 36px;
+      padding: 8px 16px;
+      background: var(--green-soft);
+      border: 1px solid rgba(0, 217, 126, 0.25);
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--green);
+      position: relative;
+    }
+    .pill .dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 0 4px var(--green-soft);
+    }
+
+    /* ---------- Sections ---------- */
+    section { padding: 64px 0; }
+    .section-head {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+    .section-head h2 {
+      font-size: clamp(28px, 4.5vw, 38px);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+    .section-head p {
+      margin-top: 12px;
+      color: var(--text-dim);
+      font-size: 17px;
+    }
+
+    /* ---------- Feature grid ---------- */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 24px;
+      transition: border-color 0.2s ease, transform 0.2s ease;
+    }
+    .card:hover {
+      border-color: rgba(0, 217, 126, 0.4);
+      transform: translateY(-3px);
+    }
+    .card .icon {
+      width: 44px; height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--green-soft);
+      border-radius: 12px;
+      margin-bottom: 18px;
+    }
+    .card .icon svg { width: 24px; height: 24px; stroke: var(--green); }
+    .card h3 {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      margin-bottom: 8px;
+    }
+    .card p {
+      color: var(--text-dim);
+      font-size: 15px;
+    }
+
+    /* ---------- Coming soon ---------- */
+    .coming {
+      background: var(--bg-soft);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      text-align: center;
+    }
+    .coming .badges {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 28px;
+    }
+    .platform {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 22px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 15px;
+      color: var(--text);
+    }
+    .platform svg { width: 22px; height: 22px; fill: var(--text); }
+    .platform small {
+      display: block;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-faint);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    /* ---------- Footer ---------- */
+    footer {
+      padding: 56px 0 40px;
+      border-top: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .foot-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 32px;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .foot-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+    .foot-brand .logo { width: 26px; height: 26px; border-radius: 6px; }
+    .foot-col p, .foot-col a {
+      color: var(--text-dim);
+      font-size: 14px;
+      display: block;
+      margin-top: 6px;
+    }
+    .foot-col a:hover { color: var(--green); }
+    .foot-col h4 {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-faint);
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+    .copyright {
+      margin-top: 44px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      color: var(--text-faint);
+      font-size: 13px;
+    }
+
+    @media (max-width: 600px) {
+      .hero { padding: 64px 0 48px; }
+      section { padding: 48px 0; }
+      .foot-grid { flex-direction: column; gap: 28px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ============ HEADER ============ -->
+  <header>
+    <div class="wrap nav">
+      <div class="brand">
+        <!-- Real app icon. Save the icon image into this folder as logo.png -->
+        <img class="logo" src="logo.png" alt="DOSR-AI logo" />
+        <span>DOSR&#8209;AI</span>
+      </div>
+      <a href="#features" style="color:var(--text-dim);font-size:15px;font-weight:500;">Features</a>
+    </div>
+  </header>
+
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <div class="wrap">
+      <!-- Real app icon. Save the icon image into this folder as logo.png -->
+      <img class="hero-logo" src="logo.png" alt="DOSR-AI logo" />
+
+      <h1>DOSR<span class="green">&#8209;</span>AI</h1>
+      <p class="tagline">Track. Stack. Optimize.</p>
+      <p class="sub">
+        A mobile health &amp; fitness app for tracking compounds, stacks, bloodwork,
+        and progress &mdash; with AI insights that turn your data into a clear plan.
+      </p>
+      <span class="pill"><span class="dot"></span>Launching soon on iOS &amp; Android</span>
+    </div>
+  </section>
+
+  <!-- ============ FEATURES ============ -->
+  <section id="features">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>What it does</h2>
+        <p>Everything you need to log, understand, and improve &mdash; in one place.</p>
+      </div>
+
+      <div class="grid">
+        <div class="card">
+          <div class="icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          </div>
+          <h3>Dose &amp; compound logging</h3>
+          <p>Record every compound and dose in seconds. Build a precise history you can actually trust.</p>
+        </div>
+
+        <div class="card">
+          <div class="icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2v6l-5 9a2 2 0 0 0 2 3h12a2 2 0 0 0 2-3l-5-9V2"/><path d="M7 2h10"/><path d="M7.5 14h9"/></svg>
+          </div>
+          <h3>Bloodwork tracking</h3>
+          <p>Log lab results over time and see your key markers trend &mdash; so nothing slips by unnoticed.</p>
+        </div>
+
+        <div class="card">
+          <div class="icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-6"/></svg>
+          </div>
+          <h3>Progress analytics</h3>
+          <p>Visualize your stacks, cycles, and results with clean charts that show what's actually working.</p>
+        </div>
+
+        <div class="card">
+          <div class="icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M9 13v2"/><path d="M15 13v2"/></svg>
+          </div>
+          <h3>AI Coach</h3>
+          <p>Get personalized insights from your own data &mdash; smart suggestions to optimize your next move.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ COMING SOON ============ -->
+  <section class="coming">
+    <div class="wrap">
+      <div class="section-head" style="margin-bottom:0;">
+        <h2>Coming soon</h2>
+        <p>DOSR&#8209;AI is launching soon on iOS and Android. Store links will appear here at release.</p>
+      </div>
+      <div class="badges">
+        <div class="platform">
+          <svg viewBox="0 0 24 24"><path d="M16.365 1.43c0 1.14-.466 2.21-1.214 3.003-.787.84-2.06 1.49-3.17 1.4-.146-1.087.42-2.22 1.156-2.96.795-.81 2.18-1.42 3.228-1.443.016.067.016.133.016.2zM20.91 17.04c-.55 1.27-.815 1.84-1.52 2.96-.984 1.56-2.37 3.51-4.09 3.52-1.53.015-1.92-.99-3.99-.98-2.07.01-2.5.995-4.03.98-1.72-.015-3.03-1.77-4.015-3.33-2.75-4.36-3.04-9.48-1.34-12.2.99-1.55 2.55-2.51 4.18-2.51 1.66 0 2.7 1.005 4.07 1.005 1.33 0 2.14-1.007 4.06-1.007 1.45 0 2.99.79 4.08 2.155-3.585 1.965-3.005 7.08.61 8.405z"/></svg>
+          <span>iOS <small>App Store soon</small></span>
+        </div>
+        <div class="platform">
+          <svg viewBox="0 0 24 24"><path d="M3.6 1.8a1 1 0 0 0-.5 1.3L11.2 12 3.1 20.9a1 1 0 0 0 1.4 1.1l11.9-8.6 2.9 2.1c.9.6 2-.4 1.5-1.4l-1.7-3.1 1.7-3.1c.5-1-.6-2-1.5-1.4l-2.9 2.1L4.5 2A1 1 0 0 0 3.6 1.8z"/></svg>
+          <span>Android <small>Google Play soon</small></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FOOTER ============ -->
+  <footer>
+    <div class="wrap">
+      <div class="foot-grid">
+        <div class="foot-col">
+          <div class="foot-brand">
+            <!-- Real app icon. Save the icon image into this folder as logo.png -->
+            <img class="logo" src="logo.png" alt="DOSR AI LLC logo" />
+            <span>DOSR AI LLC</span>
+          </div>
+          <p>North Carolina, USA</p>
+          <p><a href="mailto:dosr.llc@gmail.com">dosr.llc@gmail.com</a></p>
+        </div>
+
+        <div class="foot-col">
+          <h4>Legal</h4>
+          <a href="https://fernandobgobgomez4.github.io/Dosr-ai-legal/privacy-policy" target="_blank" rel="noopener">Privacy Policy</a>
+          <a href="https://fernandobgobgomez4.github.io/Dosr-ai-legal/terms-of-service" target="_blank" rel="noopener">Terms of Service</a>
+        </div>
+
+        <div class="foot-col">
+          <h4>Contact</h4>
+          <a href="mailto:dosr.llc@gmail.com">dosr.llc@gmail.com</a>
+          <p>North Carolina, USA</p>
+        </div>
+      </div>
+
+      <div class="copyright">
+        &copy; 2026 DOSR AI LLC &middot; All rights reserved.
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
