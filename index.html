@@ -1,469 +1,1447 @@
 <!DOCTYPE html>
+<!--
+  dosrai.com — DOSR.ai marketing site v3 (rebuilt against real app screenshots)
+  ============================================================================
+  DEPLOY: replace index.html in the `dosrai-website` repo, push to main.
+  Vercel auto-deploys in ~90s.
+
+  NO IMAGE ASSETS REQUIRED — every app screen is rebuilt in code from the real
+  UI. Recommended addition when you can: assets/og.png (1200x630) for social
+  share cards — see the og:image tag.
+
+  ACCENT: one variable drives the whole page, exactly like the app.
+  --accent below is amber (#F6A623, the app default, matching your screenshots).
+  The brand pinwheel and ".ai" stay green (#24C67E) like the real logo, and the
+  five injection-site status colors are FIXED semantics from the design system —
+  never swap those with the accent.
+
+  COMPLIANCE: no compound names, no dose amounts, no medical framing anywhere
+  on this page. Compound names in UI mocks are deliberately redacted bars (the
+  app's own invariant bans amounts in marketing mock data). The calculator is
+  labeled arithmetic-only. Do not "fix" these by making them more specific.
+-->
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DOSR-AI — Track. Stack. Optimize.</title>
-  <meta name="description" content="DOSR-AI is a mobile health & fitness tracking app for tracking compounds, stacks, bloodwork, and progress with AI insights." />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Favicon: uses the real app icon. Save the icon image into this folder as logo.png -->
-  <link rel="icon" href="logo.png" />
+<title>Peptide Tracker App — Dose, Injection Site &amp; Bloodwork Logging | DOSR.ai</title>
+<meta name="description" content="Track every compound, dose and injection site in one app. Scan bloodwork into a timeline, run reconstitution math, and ask an AI coach that reads your own logs. iOS &amp; Android.">
+<link rel="canonical" href="https://dosrai.com/">
 
-  <style>
-    :root {
-      --bg: #0a0a0b;
-      --bg-soft: #121214;
-      --card: #161618;
-      --border: #232326;
-      --text: #f4f4f5;
-      --text-dim: #a1a1aa;
-      --text-faint: #71717a;
-      --green: #00d97e;
-      --green-soft: rgba(0, 217, 126, 0.12);
-      --radius: 16px;
-      --max: 1080px;
-    }
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://dosrai.com/">
+<meta property="og:title" content="DOSR.ai — Peptide Tracker App">
+<meta property="og:description" content="Log every compound, dose and injection site. Scan your bloodwork. Ask an AI coach that reads your own data. Free on iOS &amp; Android.">
+<meta property="og:image" content="https://dosrai.com/assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="DOSR.ai — Peptide Tracker App">
+<meta name="twitter:description" content="Log every compound, dose and injection site. Scan your bloodwork. Ask an AI coach that reads your own data.">
+<meta name="twitter:image" content="https://dosrai.com/assets/og.png">
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 
-    html { scroll-behavior: smooth; }
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "DOSR.ai — Peptide Tracker",
+  "operatingSystem": "iOS, Android",
+  "applicationCategory": "HealthApplication",
+  "description": "Tracking app for compounds, doses, injection sites, bloodwork and progress. Educational only — not medical advice.",
+  "url": "https://dosrai.com/",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD",
+    "description": "Free to use. DOSR Pro $9.99/month or $79.99/year with a 1-week free trial."
+  },
+  "publisher": { "@type": "Organization", "name": "DOSR AI LLC" }
+}
+</script>
 
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      line-height: 1.6;
-      -webkit-font-smoothing: antialiased;
-      text-rendering: optimizeLegibility;
-    }
+<style>
+  :root{
+    --accent:#F6A623;                    /* THE one variable — see header comment */
+    --accent-ink:#0A0A0B;
+    --accent-tint:color-mix(in srgb, var(--accent) 13%, transparent);
+    --accent-line:color-mix(in srgb, var(--accent) 34%, transparent);
+    --accent-glow:color-mix(in srgb, var(--accent) 40%, transparent);
 
-    a { color: inherit; text-decoration: none; }
+    --brand-green:#24C67E;               /* fixed: logo pinwheel + .ai */
 
-    .wrap {
-      width: 100%;
-      max-width: var(--max);
-      margin: 0 auto;
-      padding: 0 24px;
-    }
+    /* fixed injection-site semantics — design system; never swap with accent */
+    --st-ready:#24C67E;
+    --st-resting:#F6A623;
+    --st-used:#F0596B;
+    --st-over:#B389FF;
+    --st-never:#22CCE0;
 
-    /* ---------- Header ---------- */
-    header {
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      background: rgba(10, 10, 11, 0.72);
-      backdrop-filter: saturate(140%) blur(12px);
-      border-bottom: 1px solid var(--border);
-    }
-    .nav {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 64px;
-    }
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: 700;
-      letter-spacing: -0.01em;
-      font-size: 17px;
-    }
-    .brand .logo { width: 30px; height: 30px; border-radius: 7px; }
+    /* fixed macro colors — design system */
+    --mc-protein:#F0596B; --mc-carbs:#F5B12A; --mc-fat:#38C6EA; --mc-fiber:#74D64B;
 
-    /*
-      LOGO
-      ----
-      The aperture below is an inline SVG recreation of the DOSR-AI app icon, so
-      the site is fully self-contained (no external image needed).
+    --bg:#09090A;
+    --surface:#16181D;
+    --surface-2:#1E2127;
+    --inset:#0D0E11;
+    --border:#282B32;
+    --border-soft:#1F2228;
+    --text:#F7F8FA;
+    --muted:#8B919B;
+    --faint:#585D66;
 
-      To use the real PNG icon instead, drop your file into this folder as
-      "logo.png" and replace each <svg class="logo"> / <svg class="hero-logo">
-      block with:
-        <img class="logo" src="logo.png" alt="DOSR-AI logo" />
-        <img class="hero-logo" src="logo.png" alt="DOSR-AI logo" />
-    */
+    --sans:"Space Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;
+    --mono:"Space Mono",ui-monospace,"SF Mono",Menlo,monospace;
+    --maxw:1100px;
+  }
 
-    /* ---------- Hero ---------- */
-    .hero {
-      text-align: center;
-      padding: 96px 0 72px;
-      position: relative;
-      overflow: hidden;
-    }
-    .hero::before {
-      content: "";
-      position: absolute;
-      top: -160px; left: 50%;
-      transform: translateX(-50%);
-      width: 600px; height: 600px;
-      background: radial-gradient(circle, var(--green-soft) 0%, transparent 60%);
-      pointer-events: none;
-    }
-    .hero-logo {
-      width: 104px; height: 104px;
-      margin: 0 auto 28px;
-      position: relative;
-      border-radius: 24px;
-      display: block;
-    }
-    .hero h1 {
-      font-size: clamp(40px, 7vw, 68px);
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      line-height: 1.05;
-      position: relative;
-    }
-    .hero h1 .green { color: var(--green); }
-    .tagline {
-      margin-top: 16px;
-      font-size: clamp(18px, 3vw, 22px);
-      font-weight: 600;
-      color: var(--green);
-      letter-spacing: 0.01em;
-      position: relative;
-    }
-    .hero p.sub {
-      margin: 22px auto 0;
-      max-width: 620px;
-      font-size: clamp(16px, 2.4vw, 18px);
-      color: var(--text-dim);
-      position: relative;
-    }
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      margin-top: 36px;
-      padding: 8px 16px;
-      background: var(--green-soft);
-      border: 1px solid rgba(0, 217, 126, 0.25);
-      border-radius: 999px;
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--green);
-      position: relative;
-    }
-    .pill .dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      background: var(--green);
-      box-shadow: 0 0 0 4px var(--green-soft);
-    }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+  body{
+    background:var(--bg);color:var(--text);
+    font-family:var(--sans);font-size:17px;line-height:1.6;
+    -webkit-font-smoothing:antialiased;overflow-x:hidden;
+  }
+  img,svg{max-width:100%;display:block}
+  a{color:inherit}
+  button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
 
-    /* ---------- Store badges ---------- */
-    /* position:relative keeps these above the hero radial gradient (.hero::before). */
-    .store-badges {
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 4px;
-      margin-top: 32px;
-    }
-    .store-badges a { display: inline-flex; align-items: center; border-radius: 8px; }
-    .store-badges a:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
-    /* Apple ships the badge with no built-in clear space, so pad it by 10% of
-       badge height -- meets Apple's 10% minimum and matches the margin Google
-       bakes into its own asset, so both sit on the same optical baseline. */
-    .badge-apple  { display: block; height: 40px; width: auto; margin: 10px; }
-    /* Google's asset is 646x250 but the visible badge is only 168px tall
-       (67.2%), with 41px clear space on all sides. Rendering the canvas at 60px
-       lands the visible badge at 40px -- equal to Apple's. */
-    .badge-google { display: block; height: 60px; width: auto; }
-    @media (max-width: 420px) {
-      .badge-apple  { height: 34px; margin: 8.5px; }
-      .badge-google { height: 51px; }
-    }
+  .label{
+    display:flex;align-items:center;gap:10px;
+    font-family:var(--mono);font-size:12px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--muted);margin-bottom:18px;
+  }
+  .label::before{
+    content:"";width:16px;height:3px;border-radius:2px;
+    background:var(--accent);box-shadow:0 0 8px var(--accent-glow);flex:none;
+  }
+  h2{font-size:clamp(28px,4.4vw,42px);font-weight:700;letter-spacing:-.02em;line-height:1.12}
+  h3{font-size:19px;font-weight:700;letter-spacing:-.01em;margin-bottom:8px}
+  .lede{color:var(--muted);font-size:clamp(16px,2vw,18px);max-width:60ch;margin-top:14px}
+  section{padding:96px 0;border-top:1px solid var(--border-soft)}
 
-    /* ---------- Sections ---------- */
-    section { padding: 64px 0; }
-    .section-head {
-      text-align: center;
-      margin-bottom: 48px;
-    }
-    .section-head h2 {
-      font-size: clamp(28px, 4.5vw, 38px);
-      font-weight: 800;
-      letter-spacing: -0.02em;
-    }
-    .section-head p {
-      margin-top: 12px;
-      color: var(--text-dim);
-      font-size: 17px;
-    }
+  .js .reveal{opacity:0;transform:translateY(18px)}
+  .js .reveal.in{opacity:1;transform:none;transition:opacity .7s ease,transform .7s ease;transition-delay:var(--d,0s)}
 
-    /* ---------- Feature grid ---------- */
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 20px;
-    }
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 28px 24px;
-      transition: border-color 0.2s ease, transform 0.2s ease;
-    }
-    .card:hover {
-      border-color: rgba(0, 217, 126, 0.4);
-      transform: translateY(-3px);
-    }
-    .card .icon {
-      width: 44px; height: 44px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--green-soft);
-      border-radius: 12px;
-      margin-bottom: 18px;
-    }
-    .card .icon svg { width: 24px; height: 24px; stroke: var(--green); }
-    .card h3 {
-      font-size: 18px;
-      font-weight: 700;
-      letter-spacing: -0.01em;
-      margin-bottom: 8px;
-    }
-    .card p {
-      color: var(--text-dim);
-      font-size: 15px;
-    }
+  /* ============ nav ============ */
+  header{
+    position:sticky;top:0;z-index:50;
+    background:color-mix(in srgb,var(--bg) 86%,transparent);
+    backdrop-filter:blur(12px);border-bottom:1px solid var(--border-soft);
+  }
+  .nav{display:flex;align-items:center;justify-content:space-between;height:64px}
+  .brand{display:flex;align-items:baseline;gap:2px;font-weight:700;font-size:20px;letter-spacing:-.02em;text-decoration:none}
+  .brand .dot{font-family:var(--mono);font-size:12px;color:var(--brand-green);font-weight:700}
+  .nav-links{display:flex;align-items:center;gap:26px}
+  .nav-links a{
+    font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--muted);text-decoration:none;transition:color .15s;
+  }
+  .nav-links a:hover{color:var(--text)}
+  .nav-cta{
+    background:var(--accent);color:var(--accent-ink)!important;
+    padding:9px 16px;border-radius:14px;font-weight:700;
+    box-shadow:0 0 22px var(--accent-glow);
+  }
+  @media(max-width:760px){.nav-links a:not(.nav-cta){display:none}}
 
-    /* ---------- Get the app (.coming) ---------- */
-    .coming {
-      background: var(--bg-soft);
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-      text-align: center;
-    }
-    .coming .badges {
-      display: flex;
-      gap: 14px;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin-top: 28px;
-    }
-    .platform {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      padding: 14px 22px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      font-weight: 600;
-      font-size: 15px;
-      color: var(--text);
-    }
-    .platform svg { width: 22px; height: 22px; fill: var(--text); }
-    a.platform { transition: border-color 140ms ease, background 140ms ease; }
-    a.platform:hover { border-color: var(--green); background: var(--green-soft); }
-    a.platform:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
-    .platform small {
-      display: block;
-      font-size: 11px;
-      font-weight: 500;
-      color: var(--text-faint);
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-    }
+  /* ============ pipette scroll progress ============ */
+  .pip{
+    position:fixed;right:18px;top:50%;transform:translateY(-50%);
+    width:5px;height:230px;z-index:40;border-radius:3px;
+    background:
+      repeating-linear-gradient(to bottom, transparent 0 21px, var(--border) 21px 23px),
+      var(--surface-2);
+    border:1px solid var(--border);display:none;
+  }
+  .pip-fill{position:absolute;left:0;top:0;width:100%;height:0%;background:var(--accent);border-radius:3px;box-shadow:0 0 10px var(--accent-glow)}
+  @media(min-width:1180px){.pip{display:block}}
 
-    /* ---------- Footer ---------- */
-    footer {
-      padding: 56px 0 40px;
-      border-top: 1px solid var(--border);
-      background: var(--bg);
-    }
-    .foot-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 32px;
-      justify-content: space-between;
-      align-items: flex-start;
-    }
-    .foot-brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: 700;
-      font-size: 16px;
-      margin-bottom: 10px;
-    }
-    .foot-brand .logo { width: 26px; height: 26px; border-radius: 6px; }
-    .foot-col p, .foot-col a {
-      color: var(--text-dim);
-      font-size: 14px;
-      display: block;
-      margin-top: 6px;
-    }
-    .foot-col a:hover { color: var(--green); }
-    .foot-col h4 {
-      font-size: 13px;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--text-faint);
-      margin-bottom: 10px;
-      font-weight: 600;
-    }
-    .copyright {
-      margin-top: 44px;
-      padding-top: 24px;
-      border-top: 1px solid var(--border);
-      text-align: center;
-      color: var(--text-faint);
-      font-size: 13px;
-    }
+  /* ============ hero ============ */
+  .hero{padding:72px 0 60px;border-top:none;position:relative;overflow:hidden}
+  .hero::before{
+    content:"";position:absolute;top:-240px;left:50%;transform:translateX(-50%);
+    width:820px;height:560px;border-radius:50%;
+    background:radial-gradient(circle,var(--accent-glow) 0%,transparent 68%);
+    opacity:.15;pointer-events:none;
+  }
+  .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center;position:relative}
+  @media(max-width:880px){.hero-grid{grid-template-columns:1fr;gap:44px}}
+  .kicker{
+    font-family:var(--mono);font-size:11.5px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--accent);margin-bottom:20px;display:flex;align-items:center;gap:10px;
+  }
+  .kicker::before{content:"";width:24px;height:1px;background:var(--accent-line)}
+  .hero h1{font-size:clamp(38px,6vw,62px);font-weight:700;letter-spacing:-.035em;line-height:1.03;margin-bottom:20px}
+  .hero h1 em{font-style:normal;color:var(--accent);position:relative;white-space:nowrap}
+  .hero h1 em::after{content:"";position:absolute;left:0;right:0;bottom:.04em;height:2px;background:var(--accent);opacity:.5;border-radius:2px}
+  .hero p{color:var(--muted);font-size:clamp(17px,2.1vw,19px);max-width:50ch;margin-bottom:32px}
 
-    @media (max-width: 600px) {
-      .hero { padding: 64px 0 48px; }
-      section { padding: 48px 0; }
-      .foot-grid { flex-direction: column; gap: 28px; }
-    }
-  </style>
+  .badges{display:flex;flex-wrap:wrap;gap:14px;align-items:center}
+  .store{
+    display:inline-flex;align-items:center;gap:11px;text-decoration:none;
+    background:var(--surface);border:1px solid var(--border);
+    padding:11px 20px;border-radius:15px;transition:border-color .15s,transform .15s;
+  }
+  .store:hover{border-color:var(--accent-line);transform:translateY(-1px)}
+  .store svg{width:22px;height:22px;fill:var(--text);flex:none}
+  .store span{display:block;font-size:15px;font-weight:700;letter-spacing:-.01em;line-height:1.25}
+  .store small{display:block;font-family:var(--mono);font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted)}
+  .hero-note{margin-top:20px;font-family:var(--mono);font-size:12px;letter-spacing:.06em;color:var(--faint)}
+
+  /* --- live body map card (rebuilt from the real Sites screen) --- */
+  .map-card{
+    position:relative;background:
+      linear-gradient(transparent 0 23px, color-mix(in srgb,var(--border) 30%, transparent) 23px 24px) 0 0/100% 24px,
+      var(--surface);
+    border:1px solid var(--border);border-radius:18px;padding:20px 20px 16px;
+    box-shadow:0 24px 70px rgba(0,0,0,.5), 0 0 44px color-mix(in srgb,var(--accent-glow) 40%,transparent);
+    overflow:hidden;
+  }
+  .map-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .map-title{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+  .logsite{
+    font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;font-weight:700;
+    background:var(--accent);color:var(--accent-ink);border-radius:10px;padding:6px 11px;
+    box-shadow:0 0 14px var(--accent-glow);
+  }
+  .mtiles{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:14px 0 10px}
+  .mtile{
+    background:var(--inset);border:1px solid var(--border-soft);
+    border-top:3px solid var(--c);border-radius:11px;padding:8px 6px;text-align:center;
+  }
+  .mtile b{font-family:var(--mono);font-size:17px;color:var(--c);display:block;line-height:1.2}
+  .mtile span{font-family:var(--mono);font-size:7.5px;letter-spacing:.16em;color:var(--muted);text-transform:uppercase}
+  .map-ctrl{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+  .seg{display:flex;background:var(--inset);border:1px solid var(--border);border-radius:12px;padding:3px;gap:3px}
+  .seg button{
+    font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--muted);padding:5px 11px;border-radius:9px;transition:all .15s;
+  }
+  .seg button.on{background:var(--accent);color:var(--accent-ink);font-weight:700;box-shadow:0 0 12px var(--accent-glow)}
+  .map-readout{
+    font-family:var(--mono);font-size:11px;letter-spacing:.07em;color:var(--text);
+    background:var(--inset);border:1px solid var(--border);border-radius:10px;
+    padding:8px 12px;margin:10px 0 2px;display:flex;align-items:center;gap:9px;min-height:34px;
+  }
+  .map-readout .dot{width:8px;height:8px;border-radius:50%;flex:none}
+  .fig-head{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+  .view-tag{font-family:var(--mono);font-size:8.5px;letter-spacing:.2em;color:var(--faint);text-transform:uppercase}
+  .adj{font-family:var(--mono);font-size:8.5px;letter-spacing:.1em;color:var(--muted);border:1px solid var(--border);border-radius:9px;padding:4px 9px}
+  #bodySvg{width:auto;height:auto;max-height:360px;margin:2px auto 0}
+  #bodySvg .fig{fill:#7c7c86;fill-rule:evenodd}
+  .site{cursor:pointer;transition:opacity .25s}
+  .site.dim{opacity:.14;pointer-events:none}
+  .site .halo{fill:#0D0E11}
+  .site .ring{fill:none;stroke-width:.8;opacity:0;transform-box:fill-box;transform-origin:center}
+  .site.live .ring{animation:pulse 1.8s ease-out infinite}
+  @keyframes pulse{0%{opacity:.9;transform:scale(.6)}80%,100%{opacity:0;transform:scale(1.8)}}
+  .map-legend{display:flex;gap:12px;margin-top:10px;flex-wrap:wrap}
+  .map-legend span{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .map-legend i{width:8px;height:8px;border-radius:50%;flex:none}
+
+  /* ============ telemetry marquee ============ */
+  .mq{
+    border-block:1px solid var(--border-soft);padding:15px 0;overflow:hidden;
+    -webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);
+            mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);
+  }
+  .mq-inner{display:flex;gap:56px;width:max-content;animation:mq 46s linear infinite}
+  .mq-inner:hover{animation-play-state:paused}
+  .mq-inner span{display:flex;gap:56px;font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);white-space:nowrap}
+  .mq-inner b{color:var(--muted);font-weight:400}
+  .mq-inner em{font-style:normal;color:var(--accent)}
+  @keyframes mq{to{transform:translateX(-50%)}}
+
+  /* ============ bento ============ */
+  .bento{display:grid;grid-template-columns:repeat(6,1fr);gap:16px;margin-top:44px}
+  .tile{
+    grid-column:span 2;position:relative;overflow:hidden;
+    background:var(--surface);border:1px solid var(--border);
+    border-radius:18px;padding:24px;transition:border-color .2s,transform .2s;
+  }
+  .tile:hover{border-color:var(--accent-line);transform:translateY(-2px)}
+  .tile.w3{grid-column:span 3}
+  .tile p{color:var(--muted);font-size:15px}
+  .tile .spotlight{
+    position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .3s;
+    background:radial-gradient(200px circle at var(--mx,50%) var(--my,50%),var(--accent-tint),transparent 70%);
+  }
+  .tile:hover .spotlight{opacity:1}
+  @media(max-width:900px){.tile,.tile.w3{grid-column:span 3}}
+  @media(max-width:640px){.tile,.tile.w3{grid-column:span 6}}
+
+  .tile-viz{margin:0 0 16px;position:relative;z-index:1}
+  .rrow{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--inset);border:1px solid var(--border-soft);border-radius:11px}
+  .rrow + .rrow{margin-top:7px}
+  .rbar{position:relative;height:9px;border-radius:5px;background:linear-gradient(90deg,#31363E,#3D434D);flex:none}
+  .rbar.done{opacity:.45}
+  .rbar.done::after{content:"";position:absolute;left:-3px;right:-3px;top:50%;height:1.5px;background:var(--muted)}
+  .rrow .sub{font-family:var(--mono);font-size:9px;color:var(--faint);letter-spacing:.06em}
+  .rrow .t{font-family:var(--mono);font-size:10px;color:var(--faint);letter-spacing:.08em;margin-left:auto}
+  .logchip{font-family:var(--mono);font-size:8.5px;font-weight:700;color:var(--accent);border:1px solid var(--accent-line);background:var(--accent-tint);border-radius:8px;padding:4px 11px;margin-left:auto}
+  .rrow .lg{font-family:var(--mono);font-size:9px;color:var(--faint);margin-left:auto}
+  .cyc{display:flex;align-items:center;gap:7px}
+  .cyc i{width:13px;height:13px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent-glow)}
+  .cyc i.off{background:var(--surface-2);border:1px solid var(--border);box-shadow:none}
+  .cyc .t{font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--muted);margin-left:6px}
+  /* nutrition mini (real macro colors) */
+  .nut{display:flex;gap:14px;align-items:center}
+  .nring{position:relative;flex:none;filter:drop-shadow(0 0 8px var(--accent-glow))}
+  .nring text{font-family:var(--mono);font-size:8.5px;fill:var(--text);font-weight:700}
+  .nbars{flex:1;display:grid;gap:7px;min-width:0}
+  .nb .t{display:flex;justify-content:space-between;font-family:var(--mono);font-size:7.5px;letter-spacing:.12em;color:var(--faint);text-transform:uppercase;margin-bottom:3px}
+  .nb .bar{height:5px;border-radius:3px;background:var(--surface-2);overflow:hidden}
+  .nb .bar i{display:block;height:100%;border-radius:3px}
+  .chips{display:flex;gap:7px;flex-wrap:wrap}
+  .chip{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--muted);border:1px solid var(--border);background:var(--inset);border-radius:9px;padding:5px 9px}
+  .tile-link{display:inline-flex;align-items:center;gap:7px;margin-top:14px;text-decoration:none;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+
+  /* ============ scrollytelling tour ============ */
+  .tour-wrap{display:grid;grid-template-columns:.9fr 1.1fr;gap:64px;align-items:start}
+  @media(max-width:880px){.tour-wrap{grid-template-columns:1fr;gap:0}}
+  .stage{position:sticky;top:92px}
+  @media(max-width:880px){.stage{top:64px;z-index:5;background:var(--bg);padding:12px 0 18px;border-bottom:1px solid var(--border-soft)}}
+  .phone{
+    margin:0 auto;width:100%;max-width:300px;
+    border:1px solid var(--border);border-radius:36px;padding:10px;
+    background:linear-gradient(160deg,var(--surface-2),var(--surface));
+    box-shadow:0 26px 70px rgba(0,0,0,.62),0 0 46px var(--accent-glow);
+  }
+  @media(max-width:880px){.phone{max-width:210px}}
+  .phone-inner{border-radius:27px;overflow:hidden;background:var(--bg);aspect-ratio:9/18.6;position:relative}
+  .scr{position:absolute;inset:0;opacity:0;transform:translateY(10px) scale(.985);transition:opacity .5s ease,transform .5s ease;pointer-events:none}
+  .scr.on{opacity:1;transform:none}
+
+  /* --- shared mini app language --- */
+  .app{position:absolute;inset:0;padding:16px 14px 56px;display:flex;flex-direction:column;gap:10px;font-size:12px}
+  .app .k{font-family:var(--mono);font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint)}
+  .app .acc{color:var(--accent)}
+  .a-card{background:var(--surface);border:1px solid var(--border-soft);border-radius:13px;padding:11px 12px}
+  /* real tab bar */
+  .a-tabs{
+    position:absolute;left:0;right:0;bottom:0;height:48px;
+    border-top:1px solid var(--border-soft);background:color-mix(in srgb,var(--bg) 94%,transparent);
+    display:flex;align-items:center;justify-content:space-around;padding:0 8px;
+  }
+  .ti{display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--faint)}
+  .ti svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+  .ti b{font-family:var(--mono);font-size:5.5px;letter-spacing:.08em;text-transform:uppercase;font-weight:400}
+  .ti.act{color:var(--accent)}
+  .ti-mid{
+    width:26px;height:26px;border-radius:50%;background:var(--accent-tint);
+    border:1.5px solid var(--accent);box-shadow:0 0 12px var(--accent-glow);
+    display:flex;align-items:center;justify-content:center;margin-top:-4px;
+  }
+  .ti-mid svg{width:15px;height:15px;stroke:var(--accent);fill:none;stroke-width:1.5}
+  /* peeking jar mascot */
+  .mascot{position:absolute;left:8px;bottom:52px;width:30px;opacity:.9}
+
+  /* screen 1 — home (rebuilt from real screenshot) */
+  .s0-brand{display:flex;align-items:center;gap:5px}
+  .s0-brand b{font-size:9px;font-weight:700;letter-spacing:-.01em}
+  .s0-brand i{font-family:var(--mono);font-size:6px;color:var(--brand-green);font-style:normal}
+  .s1-top{display:flex;justify-content:space-between;align-items:flex-start;margin-top:2px}
+  .s1-name{font-size:22px;font-weight:700;letter-spacing:-.02em;line-height:1.05;margin-top:3px}
+  .s1-stats{font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.06em;margin-top:5px}
+  .streak{display:flex;flex-direction:column;align-items:center;gap:1px}
+  .flame{width:25px;height:25px;filter:drop-shadow(0 0 7px rgba(220,38,38,.55))}
+  .streak .n{font-family:var(--mono);font-size:11px;font-weight:700;line-height:1}
+  .streak .n small{font-size:6px;color:var(--muted);font-weight:400;letter-spacing:.08em}
+  .s1-head{display:flex;align-items:center;gap:6px;margin-bottom:8px}
+  .s1-head .done{font-family:var(--mono);font-size:7.5px;color:var(--muted);margin-left:auto}
+  .s1-row{display:flex;align-items:center;gap:8px}
+  .s1-row + .s1-row{margin-top:7px}
+  .s1-row .rbar{height:8px}
+  .s1-btn{
+    background:var(--accent);color:var(--accent-ink);font-weight:700;font-size:13px;
+    border-radius:14px;padding:13px;text-align:center;
+    box-shadow:0 0 18px var(--accent-glow);letter-spacing:-.01em;
+  }
+
+  /* screen 2 — bloodwork */
+  .spark{width:100%;height:64px}
+  .spark polyline{fill:none;stroke:var(--accent);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .spark .area{fill:url(#sparkFill);stroke:none}
+  .spark .pt{fill:var(--accent);stroke:var(--bg);stroke-width:2}
+  .s2-caption{font-family:var(--mono);font-size:8.5px;color:var(--muted);letter-spacing:.1em;margin-top:7px}
+  .s2-chips{display:flex;gap:5px;flex-wrap:wrap}
+  .s2-chips .chip{font-size:8px;padding:4px 7px}
+  .s2-draws{display:flex;align-items:center;margin-top:4px}
+  .s2-draws .d{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1}
+  .s2-draws .d i{width:9px;height:9px;border-radius:50%;background:var(--surface-2);border:1.5px solid var(--border)}
+  .s2-draws .d.cur i{background:var(--accent);border-color:var(--accent);box-shadow:0 0 8px var(--accent-glow)}
+  .s2-draws .d b{font-family:var(--mono);font-size:7px;color:var(--faint);font-weight:400;letter-spacing:.08em}
+  .s2-scan{
+    margin-top:auto;border:1px solid var(--accent-line);background:var(--accent-tint);color:var(--accent);
+    font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;
+    border-radius:11px;padding:11px;text-align:center;box-shadow:0 0 14px color-mix(in srgb,var(--accent-glow) 50%,transparent);
+  }
+
+  /* screen 3 — coach */
+  .jar{width:24px;height:24px;flex:none}
+  .bub{max-width:84%;border-radius:12px;padding:9px 11px;font-size:10.5px;line-height:1.45;color:var(--text)}
+  .bub.c{background:var(--surface);border:1px solid var(--border-soft);border-bottom-left-radius:4px}
+  .bub.u{background:var(--accent-tint);border:1px solid var(--accent-line);margin-left:auto;border-bottom-right-radius:4px}
+  .bub .src{display:block;font-family:var(--mono);font-size:7px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-top:6px}
+  .s3-input{
+    position:absolute;left:10px;right:10px;bottom:56px;display:flex;gap:7px;align-items:center;
+    background:var(--inset);border:1px solid var(--border);border-radius:13px;padding:9px 12px;
+  }
+  .s3-input .ph{font-size:10px;color:var(--faint)}
+  .s3-input .send{margin-left:auto;width:20px;height:20px;border-radius:50%;background:var(--accent);flex:none;box-shadow:0 0 8px var(--accent-glow)}
+  .typing{display:inline-flex;gap:3px;align-items:center}
+  .typing i{width:4px;height:4px;border-radius:50%;background:var(--muted);animation:ty 1.2s infinite}
+  .typing i:nth-child(2){animation-delay:.18s}
+  .typing i:nth-child(3){animation-delay:.36s}
+  @keyframes ty{0%,60%,100%{opacity:.25}30%{opacity:1}}
+
+  .steps{display:flex;flex-direction:column}
+  .step{min-height:78vh;display:flex;flex-direction:column;justify-content:center;padding:40px 0}
+  @media(max-width:880px){.step{min-height:64vh}}
+  .step h3{font-size:clamp(23px,3.2vw,31px);letter-spacing:-.02em;margin-bottom:14px}
+  .step p{color:var(--muted);margin-bottom:18px;max-width:44ch}
+  .ticks{list-style:none;display:grid;gap:9px}
+  .ticks li{position:relative;padding-left:24px;font-size:15.5px;color:var(--muted)}
+  .ticks li::before{content:"";position:absolute;left:0;top:9px;width:9px;height:9px;border-radius:50%;border:2px solid var(--accent)}
+  .step-idx{font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--accent);margin-bottom:14px}
+
+  /* ============ calculator (rebuilt from the real Tools screen) ============ */
+  .calc-grid{display:grid;grid-template-columns:.85fr 1.15fr;gap:56px;align-items:start;margin-top:44px}
+  @media(max-width:880px){.calc-grid{grid-template-columns:1fr;gap:36px}}
+  .calc{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:24px;position:relative;overflow:hidden}
+  .c-hero{
+    border:1px solid var(--accent-line);border-radius:15px;padding:20px 16px 18px;text-align:center;
+    background:linear-gradient(180deg,var(--accent-tint),transparent 70%);
+  }
+  .c-hero .k{font-family:var(--mono);font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent)}
+  .c-hero .big{font-family:var(--mono);font-size:clamp(38px,5vw,52px);font-weight:700;letter-spacing:-.03em;line-height:1.1;margin-top:6px}
+  .c-hero .sub{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.06em}
+  .c-conc{
+    display:inline-block;margin-top:12px;font-family:var(--mono);font-size:11px;letter-spacing:.05em;
+    color:var(--accent);border:1px solid var(--accent-line);border-radius:11px;padding:7px 13px;
+  }
+  .calc-fields{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:20px}
+  @media(max-width:480px){.calc-fields{grid-template-columns:1fr}}
+  .field label{display:block;font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+  .field input[type=number]{
+    width:100%;background:var(--inset);border:1px solid var(--border);border-radius:12px;
+    color:var(--text);font-family:var(--mono);font-size:17px;padding:11px 12px;text-align:center;outline:none;
+    -moz-appearance:textfield;
+  }
+  .field input::-webkit-outer-spin-button,.field input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+  .field input:focus{border-color:var(--accent-line)}
+  input[type=range]{
+    width:100%;margin-top:16px;-webkit-appearance:none;appearance:none;height:5px;border-radius:3px;
+    background:linear-gradient(90deg,var(--accent) var(--pct,25%),var(--surface-2) var(--pct,25%));outline:none;
+  }
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px var(--accent-glow);cursor:pointer;border:2px solid var(--bg)}
+  input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px var(--accent-glow);cursor:pointer;border:2px solid var(--bg)}
+  .c-lab{font-family:var(--mono);font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin:20px 0 10px}
+  .syr-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+  .sy{
+    text-align:left;background:var(--inset);border:1px solid var(--border);border-radius:13px;padding:11px 13px;
+    transition:border-color .15s,background .15s;
+  }
+  .sy .n{display:block;font-size:11.5px;font-weight:700;color:var(--muted);letter-spacing:-.01em}
+  .sy .v{display:block;font-family:var(--mono);font-size:15px;margin-top:3px}
+  .sy .note{font-family:var(--mono);font-size:8px;color:var(--accent);letter-spacing:.04em;margin-top:2px;display:none}
+  .sy.on{border-color:var(--accent);background:var(--accent-tint)}
+  .sy.on .n{color:var(--accent)}
+  .sy.over .v{color:var(--st-resting)}
+  .syr-card{margin-top:14px;background:var(--inset);border:1px solid var(--border-soft);border-radius:13px;padding:13px 14px}
+  .syr-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+  .syr-head .n{font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+  .syr-head .f{font-family:var(--mono);font-size:10.5px;color:var(--accent)}
+  .syr{width:100%;height:auto}
+  .syr .scl{font-family:var(--mono);font-size:7px;fill:var(--faint)}
+  .syr .tick{stroke:var(--faint);stroke-width:1}
+  .syr .barrel{fill:var(--bg);stroke:var(--border);stroke-width:1}
+  .syr .liquid{fill:url(#syrFill)}
+  .syr .seal{fill:var(--accent)}
+  .syr .drip{fill:var(--accent)}
+  .syr .needle{stroke:var(--muted);stroke-width:1.5}
+  .syr .hub{fill:var(--border)}
+  .syr .rod{fill:var(--muted)}
+  .syr .flange{fill:var(--border)}
+  .calc-warn{
+    display:none;margin-top:12px;font-family:var(--mono);font-size:11px;letter-spacing:.06em;
+    color:var(--st-resting);border:1px solid color-mix(in srgb,var(--st-resting) 35%,transparent);
+    background:color-mix(in srgb,var(--st-resting) 10%,transparent);border-radius:11px;padding:9px 12px;
+  }
+  .calc-warn.show{display:block}
+  .calc-fine{margin-top:18px;font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;color:var(--faint)}
+
+  /* ============ pricing ============ */
+  .tiers{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:44px}
+  @media(max-width:720px){.tiers{grid-template-columns:1fr}}
+  .tier{position:relative;overflow:hidden;background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:30px 26px}
+  .tier.pro{border-color:var(--accent-line);background:linear-gradient(180deg,var(--accent-tint),var(--surface) 58%);box-shadow:0 0 34px var(--accent-glow)}
+  .tier .name{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+  .tier.pro .name{color:var(--accent)}
+  .price{font-family:var(--mono);font-size:34px;font-weight:700;letter-spacing:-.02em;line-height:1.1}
+  .price small{font-size:13px;color:var(--muted);font-weight:400}
+  .tier ul{list-style:none;margin-top:20px;display:grid;gap:9px}
+  .tier li{font-size:15px;color:var(--muted);padding-left:20px;position:relative}
+  .tier li::before{content:"+";position:absolute;left:0;color:var(--accent);font-family:var(--mono);font-weight:700}
+  .trial{
+    margin-top:22px;display:inline-block;font-family:var(--mono);font-size:11.5px;
+    letter-spacing:.11em;text-transform:uppercase;color:var(--accent);
+    border:1px solid var(--accent-line);background:var(--accent-tint);padding:7px 13px;border-radius:12px;
+  }
+
+  /* ============ faq / disclaimer / footer ============ */
+  .faq{margin-top:36px}
+  details{border-bottom:1px solid var(--border-soft);padding:20px 0}
+  details summary{cursor:pointer;font-weight:700;font-size:17px;letter-spacing:-.01em;list-style:none;display:flex;justify-content:space-between;gap:20px;align-items:flex-start}
+  details summary::-webkit-details-marker{display:none}
+  details summary::after{content:"+";font-family:var(--mono);color:var(--accent);font-size:20px;line-height:1;flex:none}
+  details[open] summary::after{content:"–"}
+  details p{color:var(--muted);font-size:15.5px;margin-top:12px;max-width:70ch}
+
+  .disclaimer{margin-top:44px;border:1px solid var(--border);background:var(--surface);border-radius:18px;padding:24px 26px}
+  .disclaimer p{color:var(--muted);font-size:14.5px;max-width:78ch}
+  .disclaimer strong{color:var(--text)}
+
+  footer{border-top:1px solid var(--border-soft);padding:44px 0 56px}
+  .foot{display:flex;flex-wrap:wrap;gap:24px;justify-content:space-between;align-items:center}
+  .foot-links{display:flex;flex-wrap:wrap;gap:22px}
+  .foot a{font-family:var(--mono);font-size:12px;letter-spacing:.08em;color:var(--muted);text-decoration:none}
+  .foot a:hover{color:var(--text)}
+  .foot small{font-family:var(--mono);font-size:11.5px;color:var(--faint);letter-spacing:.05em;line-height:1.8;display:block;margin-top:10px}
+
+  @media(prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    .mq-inner{animation:none}
+    .site.live .ring{animation:none;opacity:.5;transform:scale(1.4)}
+    .typing i{animation:none;opacity:.6}
+    .js .reveal{opacity:1;transform:none;transition:none}
+    .scr{transition:none}
+  }
+</style>
 </head>
 <body>
 
-  <!-- ============ HEADER ============ -->
-  <header>
-    <div class="wrap nav">
-      <div class="brand">
-        <!-- Real app icon. Save the icon image into this folder as logo.png -->
-        <img class="logo" src="logo.png" alt="DOSR-AI logo" />
-        <span>DOSR&#8209;AI</span>
-      </div>
-      <a href="#features" style="color:var(--text-dim);font-size:15px;font-weight:500;">Features</a>
-    </div>
-  </header>
+<div class="pip" aria-hidden="true"><div class="pip-fill" id="pipFill"></div></div>
 
-  <!-- ============ HERO ============ -->
-  <section class="hero">
-    <div class="wrap">
-      <!-- Real app icon. Save the icon image into this folder as logo.png -->
-      <img class="hero-logo" src="logo.png" alt="DOSR-AI logo" />
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="/">DOSR<span class="dot">.ai</span></a>
+    <nav class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#tour">Tour</a>
+      <a href="#calculator">Calculator</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">FAQ</a>
+      <a class="nav-cta" href="#get">Get the app</a>
+    </nav>
+  </div>
+</header>
 
-      <h1>DOSR<span class="green">&#8209;</span>AI</h1>
-      <p class="tagline">Track. Stack. Optimize.</p>
-      <p class="sub">
-        A mobile health &amp; fitness app for tracking compounds, stacks, bloodwork,
-        and progress &mdash; with AI insights that turn your data into a clear plan.
-      </p>
-      <span class="pill"><span class="dot"></span>Now available on iOS &amp; Android</span>
+<!-- ================= HERO ================= -->
+<section class="hero" id="get">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="kicker">Protocol tracking, taken seriously</div>
+      <h1>Your protocol shouldn't live in your <em>Notes app</em>.</h1>
+      <p>DOSR.ai puts your compounds, doses, injection sites and bloodwork in one
+         private place — with an AI coach that reads your own logs, not the internet.</p>
 
-      <div class="store-badges">
-        <a href="https://apps.apple.com/us/app/dosr-ai/id6789022725"
-           target="_blank" rel="noopener"
-           aria-label="Download DOSR-AI on the App Store">
-          <img class="badge-apple" src="app-store-badge.svg"
-               alt="Download on the App Store" />
-        </a>
-        <a href="https://play.google.com/store/apps/details?id=com.dosrai.app"
-           target="_blank" rel="noopener"
-           aria-label="Get DOSR-AI on Google Play">
-          <img class="badge-google" src="google-play-badge.png"
-               alt="Get it on Google Play" />
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ FEATURES ============ -->
-  <section id="features">
-    <div class="wrap">
-      <div class="section-head">
-        <h2>What it does</h2>
-        <p>Everything you need to log, understand, and improve &mdash; in one place.</p>
-      </div>
-
-      <div class="grid">
-        <div class="card">
-          <div class="icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-          </div>
-          <h3>Dose &amp; compound logging</h3>
-          <p>Record every compound and dose in seconds. Build a precise history you can actually trust.</p>
-        </div>
-
-        <div class="card">
-          <div class="icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2v6l-5 9a2 2 0 0 0 2 3h12a2 2 0 0 0 2-3l-5-9V2"/><path d="M7 2h10"/><path d="M7.5 14h9"/></svg>
-          </div>
-          <h3>Bloodwork tracking</h3>
-          <p>Log lab results over time and see your key markers trend &mdash; so nothing slips by unnoticed.</p>
-        </div>
-
-        <div class="card">
-          <div class="icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-6"/></svg>
-          </div>
-          <h3>Progress analytics</h3>
-          <p>Visualize your stacks, cycles, and results with clean charts that show what's actually working.</p>
-        </div>
-
-        <div class="card">
-          <div class="icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M9 13v2"/><path d="M15 13v2"/></svg>
-          </div>
-          <h3>AI Coach</h3>
-          <p>Get personalized insights from your own data &mdash; smart suggestions to optimize your next move.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ GET THE APP ============ -->
-  <section class="coming">
-    <div class="wrap">
-      <div class="section-head" style="margin-bottom:0;">
-        <h2>Get DOSR&#8209;AI</h2>
-      </div>
       <div class="badges">
-        <a class="platform" href="https://apps.apple.com/us/app/dosr-ai/id6789022725" target="_blank" rel="noopener">
-          <svg viewBox="0 0 24 24"><path d="M16.365 1.43c0 1.14-.466 2.21-1.214 3.003-.787.84-2.06 1.49-3.17 1.4-.146-1.087.42-2.22 1.156-2.96.795-.81 2.18-1.42 3.228-1.443.016.067.016.133.016.2zM20.91 17.04c-.55 1.27-.815 1.84-1.52 2.96-.984 1.56-2.37 3.51-4.09 3.52-1.53.015-1.92-.99-3.99-.98-2.07.01-2.5.995-4.03.98-1.72-.015-3.03-1.77-4.015-3.33-2.75-4.36-3.04-9.48-1.34-12.2.99-1.55 2.55-2.51 4.18-2.51 1.66 0 2.7 1.005 4.07 1.005 1.33 0 2.14-1.007 4.06-1.007 1.45 0 2.99.79 4.08 2.155-3.585 1.965-3.005 7.08.61 8.405z"/></svg>
-          <span>iOS <small>App Store</small></span>
+        <a class="store" href="https://apps.apple.com/us/app/dosr-ai/id6789022725">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.05 12.54c.02-2.4 1.96-3.55 2.05-3.61-1.12-1.64-2.86-1.86-3.48-1.89-1.48-.15-2.89.87-3.64.87-.75 0-1.91-.85-3.14-.83-1.61.02-3.1.94-3.93 2.38-1.68 2.91-.43 7.22 1.2 9.58.8 1.16 1.75 2.46 3 2.41 1.21-.05 1.66-.78 3.13-.78 1.46 0 1.88.78 3.15.75 1.3-.02 2.12-1.18 2.91-2.34.92-1.34 1.3-2.64 1.32-2.71-.03-.01-2.54-.97-2.57-3.86zM14.7 5.4c.66-.81 1.11-1.93.99-3.05-.95.04-2.11.64-2.8 1.44-.62.71-1.16 1.85-1.02 2.94 1.06.08 2.15-.54 2.83-1.33z"/></svg>
+          <span>App Store<small>Download on the</small></span>
         </a>
-        <a class="platform" href="https://play.google.com/store/apps/details?id=com.dosrai.app" target="_blank" rel="noopener">
-          <svg viewBox="0 0 24 24"><path d="M3.6 1.8a1 1 0 0 0-.5 1.3L11.2 12 3.1 20.9a1 1 0 0 0 1.4 1.1l11.9-8.6 2.9 2.1c.9.6 2-.4 1.5-1.4l-1.7-3.1 1.7-3.1c.5-1-.6-2-1.5-1.4l-2.9 2.1L4.5 2A1 1 0 0 0 3.6 1.8z"/></svg>
-          <span>Android <small>Google Play</small></span>
+        <a class="store" href="https://play.google.com/store/apps/details?id=com.dosrai.app">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.6 2.2c-.3.3-.5.8-.5 1.4v16.8c0 .6.2 1.1.5 1.4l.1.1 9.4-9.4v-.2L3.6 2.2zM16.3 15.1l-3.1-3.1v-.2l3.1-3.1.1.04 3.7 2.1c1.05.6 1.05 1.58 0 2.18l-3.7 2.1-.1.02zM15.6 15.8L12.4 12.6 3 22c.35.37.92.42 1.57.05l11.03-6.25zM15.6 8.2L4.57 1.95C3.92 1.58 3.35 1.63 3 2l9.4 9.4 3.2-3.2z"/></svg>
+          <span>Google Play<small>Get it on</small></span>
         </a>
       </div>
+      <p class="hero-note">Free to use · iOS &amp; Android · 18+</p>
     </div>
-  </section>
 
-  <!-- ============ FOOTER ============ -->
-  <footer>
-    <div class="wrap">
-      <div class="foot-grid">
-        <div class="foot-col">
-          <div class="foot-brand">
-            <!-- Real app icon. Save the icon image into this folder as logo.png -->
-            <img class="logo" src="logo.png" alt="DOSR AI LLC logo" />
-            <span>DOSR AI LLC</span>
+    <!-- live site tracker, rebuilt from the real Sites screen -->
+    <div class="map-card reveal" id="mapCard">
+      <div class="map-head">
+        <div class="map-title">Tracker · Sites</div>
+        <span class="logsite">＋ Log site</span>
+      </div>
+
+      <div class="mtiles">
+        <div class="mtile" style="--c:var(--st-ready)"><b id="ctReady">0</b><span>Ready</span></div>
+        <div class="mtile" style="--c:var(--st-resting)"><b id="ctResting">0</b><span>Resting</span></div>
+        <div class="mtile" style="--c:var(--st-over)"><b id="ctOver">0</b><span>Overused</span></div>
+      </div>
+
+      <div class="map-ctrl">
+        <div class="seg" role="tablist" aria-label="Body view">
+          <button id="vFront" class="on">Front</button>
+          <button id="vBack">Back</button>
+        </div>
+        <div class="seg" role="tablist" aria-label="Site type filter">
+          <button id="fAll" class="on">All</button>
+          <button id="fIM">IM</button>
+          <button id="fSQ">SubQ</button>
+        </div>
+      </div>
+
+      <div class="map-readout"><span class="dot" id="roDot"></span><span id="roText">—</span></div>
+
+      <div class="fig-head">
+        <span class="view-tag" id="viewTag">Anterior view</span>
+        <span class="adj">✎ Adjust</span>
+      </div>
+
+      <svg id="bodySvg" viewBox="0 0 100 200" aria-label="Interactive body map showing injection site rotation status">
+        <g id="figFront">
+          <path class="fig" d="m 43.85 28.55 c -0.5 -0.5 -0.85 -1.15 -1.06 -1.82 -0.22 -0.68 -0.32 -1.38 -0.39 -2.09 -0.08 -0.7 -0.11 -1.41 -0.23 -2.08 -0.13 -0.67 -0.39 -1.32 -0.57 -2.02 -0.35 -1.42 -0.27 -2.87 -0.24 -4.27 0.01 -0.34 0.03 -0.77 -0.05 -0.81 -0.02 -0.03 -0.11 -0.08 -0.29 -0.14 -0.19 -0.08 -0.37 -0.18 -0.54 -0.3 -0.33 -0.24 -0.61 -0.55 -0.8 -0.95 -0.19 -0.39 -0.22 -0.97 0.06 -1.39 l 0.37 0.64 c -0.39 0.03 -0.77 -0.11 -1.07 -0.31 -0.3 -0.21 -0.53 -0.48 -0.7 -0.8 -0.32 -0.63 -0.33 -1.31 -0.28 -1.91 0.06 -0.59 0.16 -1.27 0.64 -1.85 0.25 -0.3 0.59 -0.5 0.97 -0.58 0.37 -0.09 0.84 -0.04 1.2 0.25 l -0.77 0.39 c -0.05 -1.43 0.84 -2.77 2.15 -3.32 1.32 -0.53 2.88 -0.18 3.84 0.86 l -0.59 -0.05 c 0.86 -0.66 1.93 -0.99 3 -0.98 0.53 0 1.06 0.09 1.57 0.27 0.51 0.18 0.96 0.45 1.38 0.73 l 2.41 1.68 c 0.38 0.29 0.74 0.41 1.23 0.57 0.48 0.15 0.99 0.41 1.39 0.74 0.83 0.66 1.4 1.58 1.71 2.56 0.31 0.98 0.38 2 0.37 2.99 -0.06 1.98 -0.26 3.92 -0.5 5.87 l -0.39 2.91 c -0.14 0.96 -0.24 1.95 -0.56 2.91 -0.31 0.97 -0.93 1.8 -1.58 2.53 l -1.95 2.19 c -0.33 0.36 -0.63 0.74 -1.02 1.08 -0.39 0.35 -0.93 0.46 -1.41 0.49 -0.97 0.06 -1.98 0.15 -2.93 -0.15 -0.95 -0.31 -1.71 -0.99 -2.42 -1.65 -0.71 -0.66 -1.44 -1.34 -1.97 -2.17 z m 0.07 -0.06 c 0.53 0.82 1.25 1.49 1.96 2.16 0.71 0.65 1.46 1.34 2.39 1.61 0.93 0.28 1.92 0.17 2.89 0.08 0.48 -0.04 0.95 -0.15 1.3 -0.48 0.35 -0.31 0.64 -0.72 0.96 -1.08 l 1.89 -2.24 c 0.62 -0.75 1.17 -1.54 1.44 -2.45 0.28 -0.91 0.35 -1.88 0.48 -2.85 l 0.35 -2.91 c 0.21 -1.93 0.38 -3.89 0.41 -5.81 0 -0.96 -0.09 -1.91 -0.38 -2.79 -0.29 -0.87 -0.82 -1.67 -1.53 -2.22 -0.36 -0.28 -0.74 -0.47 -1.19 -0.61 -0.22 -0.07 -0.47 -0.14 -0.72 -0.25 -0.25 -0.1 -0.5 -0.26 -0.7 -0.4 l -2.43 -1.63 c -0.4 -0.26 -0.8 -0.48 -1.22 -0.62 -0.42 -0.14 -0.86 -0.21 -1.31 -0.2 -0.89 0.01 -1.78 0.31 -2.46 0.85 l -0.31 0.25 -0.28 -0.29 c -0.7 -0.74 -1.92 -0.99 -2.85 -0.6 -0.94 0.39 -1.59 1.43 -1.56 2.43 l 0.04 1.2 -0.8 -0.82 c -0.16 -0.17 -0.65 -0.08 -0.88 0.2 -0.27 0.3 -0.38 0.8 -0.43 1.33 -0.05 0.52 -0.03 1.03 0.16 1.43 0.18 0.39 0.57 0.69 0.93 0.67 l 0.81 -0.04 -0.44 0.68 c -0.11 0.17 -0.13 0.38 -0.03 0.62 0.1 0.24 0.29 0.48 0.52 0.66 0.12 0.09 0.24 0.16 0.37 0.23 0.14 0.07 0.39 0.15 0.59 0.42 0.17 0.27 0.16 0.53 0.16 0.72 l -0.04 0.54 c -0.11 1.4 -0.27 2.8 -0.01 4.14 0.13 0.67 0.37 1.35 0.46 2.06 0.08 0.72 0.08 1.41 0.14 2.11 0.06 0.7 0.14 1.39 0.33 2.06 0.19 0.67 0.5 1.3 0.99 1.81"/>
+          <path class="fig" d="m 57.38 23.93 c 0.38 -2.9 0.66 -4.81 0.84 -7.73 0.11 -1.65 0.17 -3.37 -0.43 -4.91 -0.45 -1.13 -1.32 -2.17 -2.48 -2.61 -0.63 -0.24 -0.99 -0.27 -1.53 -0.64 -0.69 -0.48 -1.39 -0.95 -2.09 -1.43 -0.46 -0.31 -0.92 -0.63 -1.42 -0.85 -1.45 -0.63 -3.23 -0.41 -4.48 0.56 -0.83 -0.89 -2.22 -1.19 -3.35 -0.73 -1.12 0.46 -1.9 1.66 -1.86 2.88 -0.43 -0.34 -1.12 -0.18 -1.49 0.23 -0.37 0.41 -0.5 0.98 -0.56 1.54 -0.06 0.58 -0.06 1.19 0.19 1.72 0.25 0.53 0.78 0.96 1.36 0.93 -0.48 0.74 0.24 1.73 1.06 2.08 0.16 0.07 0.32 0.13 0.43 0.26 0.14 0.17 0.13 0.4 0.12 0.62 -0.08 1.83 -0.54 3.84 0.49 5.45 0.1 -1.74 0.19 -3.47 0.29 -5.21 1.23 0.47 2.79 -0.42 3 -1.72 0.5 0.26 1.02 0.53 1.58 0.54 0.56 0.02 1.18 -0.3 1.32 -0.84 0.91 0.78 2.24 0.93 3.4 0.62 1.16 -0.31 2.17 -1.02 3.08 -1.8 0.04 1.02 0.69 2 1.61 2.44 0.15 0.07 0.31 0.13 0.41 0.26 0.11 0.15 0.12 0.34 0.13 0.53 0.05 2.06 0.1 4.13 0.16 6.19 l 0.22 1.62"/>
+          <path class="fig" d="m 43.7 28.3 c 0.12 0.75 0.19 1.51 0.23 2.28 0.04 0.76 0.04 1.53 0.02 2.29 -0.04 0.76 -0.09 1.53 -0.19 2.28 -0.1 0.76 -0.24 1.51 -0.45 2.25 0.1 -0.76 0.19 -1.51 0.26 -2.27 0.06 -0.76 0.12 -1.51 0.13 -2.27 0.04 -0.76 0.04 -1.52 0.04 -2.28 0 -0.76 -0.02 -1.52 -0.03 -2.28"/>
+          <path class="fig" d="m 49.91 78.78 c -0.17 0.3 -0.26 0.63 -0.29 0.96 -0.01 0.32 -0.04 0.71 0.13 0.89 0.15 0.18 0.55 0.01 0.52 -0.28 0 -0.14 -0.07 -0.29 -0.19 -0.38 -0.11 -0.1 -0.3 -0.15 -0.44 -0.05 0.11 -0.15 0.35 -0.15 0.51 -0.06 0.17 0.1 0.29 0.27 0.32 0.47 0.1 0.44 -0.52 0.84 -0.89 0.47 -0.16 -0.17 -0.18 -0.38 -0.19 -0.56 0 -0.18 0.01 -0.36 0.05 -0.53 0.07 -0.35 0.22 -0.69 0.48 -0.93"/>
+          <path class="fig" d="m 46.35 18.68 c 0.13 -0.01 0.25 -0.02 0.38 -0.03 0.32 -0.03 0.69 -0.03 0.91 0.2 0.1 0.11 0.15 0.25 0.2 0.39 0.03 0.07 0.05 0.15 0.03 0.22 -0.05 0.15 -1.93 0 -2.2 0.02 -0.19 0.01 -1.75 0.25 -1.73 0.44 -0.04 -0.46 0.31 -0.82 0.71 -0.98 0.33 -0.14 0.7 -0.17 1.05 -0.2 0.22 -0.02 0.44 -0.04 0.66 -0.05"/>
+          <path class="fig" d="m 52.82 18.68 c -0.13 -0.01 -0.25 -0.02 -0.38 -0.03 -0.32 -0.03 -0.69 -0.03 -0.91 0.2 -0.1 0.11 -0.15 0.25 -0.2 0.39 -0.03 0.07 -0.05 0.15 -0.03 0.22 0.05 0.15 1.93 0 2.2 0.02 0.19 0.01 1.75 0.25 1.73 0.44 0.04 -0.46 -0.31 -0.82 -0.71 -0.98 -0.33 -0.14 -0.7 -0.17 -1.05 -0.2 -0.22 -0.02 -0.44 -0.04 -0.66 -0.05"/>
+          <path class="fig" d="m 44.67 21.28 c 0.05 -0.25 0.26 -0.5 0.53 -0.58 0.12 -0.04 0.25 -0.06 0.38 -0.09 0.13 -0.02 0.23 -0.02 0.34 -0.03 0.22 0 0.45 0.01 0.67 0.06 0.11 0.02 0.24 0.05 0.36 0.1 0.12 0.07 0.26 0.15 0.3 0.28 l -0.03 0.03 c -0.17 -0.14 -0.41 -0.12 -0.63 -0.12 l -0.67 0.02 c -0.23 -0.01 -0.45 0.01 -0.67 0.03 -0.22 0.03 -0.42 0.15 -0.56 0.31 l -0.03 -0.02"/>
+          <path class="fig" d="m 45.72 21.47 c 0.03 0.05 0.08 0.09 0.13 0.12 0.11 0.07 0.26 0.1 0.39 0.08 0.13 -0.03 0.25 -0.12 0.3 -0.25 0.07 -0.17 0 -0.38 -0.15 -0.49 -0.33 -0.24 -0.92 0.14 -0.67 0.53"/>
+          <path class="fig" d="m 45.97 21.3 c 0.16 0 0.16 -0.25 0 -0.25 -0.16 0 -0.16 0.25 0 0.25 v 0"/>
+          <path class="fig" d="m 46.19 21.57 c 0.16 0 0.16 -0.25 0 -0.25 -0.16 0 -0.16 0.25 0 0.25 v 0"/>
+          <path class="fig" d="m 54.19 21.3 c -0.15 -0.16 -0.34 -0.29 -0.56 -0.31 -0.22 -0.02 -0.44 -0.03 -0.67 -0.03 l -0.67 -0.02 c -0.22 -0.01 -0.46 -0.02 -0.63 0.12 l -0.03 -0.03 c 0.04 -0.14 0.18 -0.22 0.3 -0.28 0.13 -0.05 0.25 -0.08 0.36 -0.1 0.23 -0.05 0.45 -0.06 0.67 -0.06 0.12 0.01 0.22 0.01 0.34 0.03 0.13 0.03 0.26 0.05 0.38 0.09 0.27 0.08 0.48 0.33 0.53 0.58 l -0.03 0.02"/>
+          <path class="fig" d="m 53.17 21.47 c -0.03 0.05 -0.08 0.09 -0.13 0.12 -0.11 0.07 -0.25 0.1 -0.39 0.08 -0.13 -0.03 -0.25 -0.12 -0.3 -0.25 -0.07 -0.17 0 -0.38 0.15 -0.49 0.33 -0.24 0.92 0.14 0.67 0.53"/>
+          <path class="fig" d="m 52.92 21.3 c 0.16 0 0.16 -0.25 0 -0.25 -0.16 0 -0.16 0.25 0 0.25 v 0"/>
+          <path class="fig" d="m 52.7 21.57 c 0.16 0 0.16 -0.25 0 -0.25 -0.16 0 -0.16 0.25 0 0.25 v 0"/>
+          <path class="fig" d="m 48.61 20.5 c 0.06 0.69 0.11 1.39 0.07 2.09 -0.05 0.7 -0.15 1.38 -0.24 2.06 l -0.08 0.51 c -0.01 0.09 -0.02 0.17 -0.02 0.22 0.01 0.05 0.02 0.07 0.05 0.1 0.07 0.07 0.24 0.1 0.41 0.14 0.16 0.03 0.33 0.06 0.5 0.09 0.33 0.05 0.68 0.07 1.01 0.05 0.16 0 0.28 -0.08 0.34 -0.24 0.06 -0.15 0.06 -0.33 0.06 -0.5 0.04 0.17 0.08 0.34 0.04 0.53 -0.02 0.19 -0.21 0.36 -0.41 0.39 -0.36 0.06 -0.71 0.07 -1.06 0.06 -0.18 -0.01 -0.36 -0.02 -0.53 -0.05 -0.17 -0.03 -0.36 -0.03 -0.57 -0.18 -0.11 -0.07 -0.18 -0.22 -0.19 -0.34 -0.01 -0.12 0 -0.21 0.01 -0.3 l 0.07 -0.52 c 0.1 -0.69 0.21 -1.38 0.33 -2.05 0.1 -0.67 0.12 -1.37 0.22 -2.06"/>
+          <path class="fig" d="m 47.37 27.49 c 0.23 -0.04 0.3 -0.18 0.49 -0.29 0.18 -0.1 0.38 -0.2 0.6 -0.25 0.22 -0.07 0.46 -0.09 0.71 -0.08 0.03 0 0.06 0 0.09 0.01 0.04 0.01 0.06 0.01 0.06 0.01 l 0.07 0 c 0.05 0 0.11 0 0.18 -0.01 0.14 0 0.33 -0.01 0.55 0.01 0.21 0.03 0.42 0.06 0.62 0.12 0.47 0.09 0.62 0.35 1.1 0.45 l 0.05 0.08 c -0.17 0.11 -0.37 0.16 -0.57 0.18 -0.2 0.01 -0.39 0.01 -0.58 0.01 l -0.57 0.01 -0.57 0.04 c -0.19 0.01 -0.41 -0.02 -0.59 -0.06 -0.18 -0.03 -0.37 -0.05 -0.56 -0.05 -0.19 0 -0.38 0.01 -0.57 0.02 -0.18 0 -0.41 0.02 -0.58 -0.13 l 0.06 -0.07"/>
+          <path class="fig" d="m 48.75 28.73 c 0.28 0.01 0.56 0.03 0.84 0.03 l 0.85 0.02 0 0.03 c -0.14 0.09 -0.28 0.13 -0.42 0.16 -0.14 0.03 -0.29 0.03 -0.43 0.05 -0.14 -0.02 -0.28 -0.01 -0.43 -0.06 -0.14 -0.04 -0.29 -0.09 -0.41 -0.19 l 0 -0.02"/>
+          <path class="fig" d="m 41.84 20.09 c -0.22 -0.31 -0.49 -0.57 -0.79 -0.64 -0.29 -0.08 -0.59 0.05 -0.83 0.26 -0.24 0.2 -0.43 0.53 -0.5 0.9 -0.06 0.37 -0.02 0.75 0.09 1.1 0.22 0.71 0.55 1.36 1.01 1.91 0.22 0.27 0.48 0.55 0.74 0.78 0.26 0.23 0.57 0.4 0.95 0.38 l 0.01 0.05 c -0.36 0.19 -0.85 0.11 -1.19 -0.1 -0.36 -0.21 -0.65 -0.47 -0.91 -0.78 -0.5 -0.63 -0.82 -1.4 -0.86 -2.19 -0.02 -0.39 -0.02 -0.78 0 -1.17 0.02 -0.38 0.07 -0.81 0.36 -1.17 0.28 -0.33 0.8 -0.53 1.25 -0.33 0.43 0.19 0.65 0.6 0.71 0.98 l -0.05 0.02"/>
+          <path class="fig" d="m 40.62 22.36 c -0.27 -0.16 -0.4 -0.48 -0.49 -0.77 -0.08 -0.29 -0.14 -0.63 -0.01 -0.95 0.07 -0.16 0.18 -0.3 0.34 -0.38 0.15 -0.09 0.36 -0.12 0.53 -0.05 0.36 0.14 0.51 0.53 0.51 0.85 0.01 0.33 -0.11 0.63 -0.06 0.89 0.02 0.13 0.1 0.19 0.24 0.27 0.13 0.07 0.27 0.23 0.32 0.39 0.06 0.16 0.08 0.32 0.09 0.47 0.01 0.08 0.01 0.15 0.01 0.24 0 0.09 -0.05 0.19 -0.11 0.25 -0.24 0.19 -0.36 0.48 -0.32 0.79 -0.1 -0.29 0.01 -0.65 0.22 -0.87 0.09 -0.1 0.05 -0.23 0.03 -0.39 -0.02 -0.15 -0.06 -0.29 -0.12 -0.41 -0.06 -0.13 -0.13 -0.21 -0.27 -0.29 -0.07 -0.05 -0.13 -0.06 -0.21 -0.14 -0.07 -0.07 -0.11 -0.16 -0.13 -0.25 -0.07 -0.36 0.05 -0.65 0.03 -0.93 0.01 -0.27 -0.12 -0.55 -0.35 -0.64 -0.22 -0.1 -0.49 0.07 -0.61 0.3 -0.12 0.24 -0.1 0.55 -0.04 0.84 0.05 0.29 0.14 0.59 0.37 0.8"/>
+          <path class="fig" d="m 41.25 21.93 c -0.01 0.12 -0.02 0.24 -0.02 0.36 -0.01 0.12 0.04 0.23 0.1 0.32 0.14 0.18 0.39 0.25 0.6 0.21 l 0.02 0.12 c -0.25 0.02 -0.53 -0.08 -0.67 -0.3 -0.07 -0.1 -0.11 -0.24 -0.08 -0.36 0.01 -0.12 0.03 -0.24 0.05 -0.36"/>
+          <path class="fig" d="m 41.32 20.82 c -0.2 -0.08 -0.46 0.05 -0.56 0.26 -0.12 0.21 -0.12 0.47 -0.12 0.72 l -0.04 0 c 0.06 -0.24 0.23 -0.45 0.44 -0.56 -0.21 0.12 -0.36 0.34 -0.4 0.57 l -0.03 0.16 -0.01 -0.16 c -0.02 -0.25 -0.03 -0.52 0.08 -0.76 0.1 -0.24 0.39 -0.44 0.68 -0.35 l -0.04 0.12"/>
+          <path class="fig" d="m 57.86 20.07 c 0.06 -0.38 0.27 -0.79 0.71 -0.98 0.44 -0.19 0.97 0 1.25 0.33 0.29 0.35 0.34 0.78 0.36 1.17 0.02 0.39 0.02 0.77 0 1.17 -0.04 0.79 -0.36 1.57 -0.86 2.19 -0.27 0.31 -0.56 0.57 -0.91 0.78 -0.35 0.21 -0.84 0.3 -1.19 0.1 l 0.01 -0.05 c 0.39 0.01 0.69 -0.15 0.95 -0.38 0.26 -0.23 0.52 -0.51 0.74 -0.78 0.46 -0.55 0.79 -1.2 1.01 -1.91 0.1 -0.35 0.15 -0.74 0.09 -1.1 -0.06 -0.36 -0.25 -0.7 -0.5 -0.9 -0.24 -0.21 -0.54 -0.34 -0.83 -0.26 -0.29 0.07 -0.57 0.33 -0.79 0.64 l -0.05 -0.02"/>
+          <path class="fig" d="m 59.13 22.36 c 0.23 -0.21 0.32 -0.51 0.37 -0.8 0.06 -0.29 0.08 -0.6 -0.04 -0.84 -0.12 -0.23 -0.39 -0.4 -0.61 -0.3 -0.23 0.1 -0.35 0.37 -0.35 0.64 -0.02 0.28 0.1 0.58 0.03 0.93 -0.02 0.09 -0.06 0.18 -0.13 0.25 -0.07 0.08 -0.14 0.09 -0.21 0.14 -0.14 0.08 -0.2 0.16 -0.27 0.29 -0.06 0.12 -0.09 0.27 -0.12 0.41 -0.02 0.16 -0.06 0.29 0.03 0.39 0.22 0.22 0.32 0.58 0.22 0.87 0.04 -0.31 -0.08 -0.6 -0.32 -0.79 -0.06 -0.06 -0.11 -0.16 -0.11 -0.25 0 -0.09 0.01 -0.16 0.01 -0.24 0.01 -0.15 0.04 -0.31 0.09 -0.47 0.05 -0.15 0.19 -0.32 0.32 -0.39 0.14 -0.08 0.22 -0.14 0.24 -0.27 0.05 -0.25 -0.06 -0.55 -0.05 -0.89 0 -0.32 0.16 -0.71 0.51 -0.85 0.18 -0.07 0.38 -0.04 0.53 0.05 0.16 0.09 0.27 0.23 0.34 0.38 0.13 0.32 0.07 0.66 -0.01 0.95 -0.09 0.29 -0.22 0.61 -0.49 0.77"/>
+          <path class="fig" d="m 58.5 21.93 c 0.02 0.12 0.04 0.23 0.05 0.36 0.02 0.12 -0.02 0.25 -0.08 0.36 -0.14 0.22 -0.41 0.32 -0.67 0.3 l 0.02 -0.12 c 0.22 0.04 0.46 -0.03 0.6 -0.21 0.07 -0.09 0.12 -0.2 0.1 -0.32 0 -0.12 -0.01 -0.24 -0.02 -0.36"/>
+          <path class="fig" d="m 58.38 20.7 c 0.29 -0.1 0.58 0.1 0.68 0.35 0.11 0.24 0.1 0.51 0.08 0.76 l -0.01 0.16 -0.03 -0.16 c -0.04 -0.23 -0.19 -0.45 -0.4 -0.57 0.22 0.11 0.38 0.32 0.44 0.56 l -0.04 0 c 0 -0.25 0 -0.51 -0.12 -0.72 -0.1 -0.21 -0.36 -0.35 -0.56 -0.26 l -0.04 -0.12"/>
+          <path class="fig" d="m 43.84 31.36 c -0.28 0.97 -0.99 1.76 -1.77 2.36 -0.79 0.61 -1.69 1.05 -2.55 1.54 -0.87 0.48 -1.67 1.03 -2.35 1.77 -0.18 0.17 -0.44 0.33 -0.72 0.36 -0.27 0.03 -0.51 0.01 -0.76 0.02 -0.5 0 -0.99 0.01 -1.48 0.03 -0.98 0.05 -1.96 0.16 -2.89 0.44 -0.93 0.28 -1.8 0.75 -2.58 1.32 -1.57 1.16 -2.72 2.82 -3.41 4.64 -0.7 1.82 -0.96 3.79 -0.95 5.75 0 0.98 0.05 1.97 0.1 2.96 l 0.08 1.49 c 0.02 0.51 0 1.02 -0.05 1.52 -0.2 2.02 -0.83 3.91 -1.12 5.85 -0.32 1.94 -0.47 3.9 -0.46 5.87 0 0.99 -0.05 1.99 -0.08 2.99 l -0.05 1.5 c -0.03 0.51 -0.11 1.02 -0.21 1.51 -0.41 1.99 -1.18 3.83 -1.54 5.74 -0.38 1.92 -0.54 3.89 -0.63 5.85 -0.09 1.97 -0.09 3.94 -0.05 5.92 0.03 1.98 -0.01 4.02 -0.58 6 -0.29 0.98 -0.73 1.93 -1.32 2.77 -0.6 0.86 -1.34 1.52 -1.92 2.29 -0.29 0.38 -0.52 0.77 -0.72 1.21 -0.2 0.44 -0.37 0.91 -0.62 1.38 -0.48 0.92 -1.25 1.72 -2.11 2.26 -0.4 0.27 -0.69 0.56 -0.69 0.91 0 0.17 0.06 0.29 0.18 0.35 0.12 0.07 0.37 0.1 0.59 0.11 0.89 0.04 1.82 -0.35 2.39 -1.04 l 0.79 -0.93 -0.27 1.18 c -0.34 1.45 -0.67 2.9 -0.92 4.36 -0.12 0.73 -0.22 1.46 -0.29 2.2 -0.03 0.37 -0.06 0.73 -0.07 1.1 -0.01 0.18 -0.01 0.37 -0.01 0.55 0 0.19 -0.01 0.37 0.02 0.5 0.03 0.14 0.08 0.22 0.15 0.26 0.07 0.04 0.2 0.04 0.32 0 0.23 -0.08 0.39 -0.36 0.49 -0.69 0.2 -0.69 0.35 -1.43 0.51 -2.15 l 0.45 -2.19 c 0.08 -0.37 0.16 -0.73 0.25 -1.1 0.1 -0.37 0.18 -0.73 0.4 -1.12 l 0.54 -0.98 -0.07 1.13 -0.29 4.58 -0.14 2.29 -0.04 0.57 c -0.01 0.18 -0.01 0.36 0.01 0.53 0.04 0.35 0.19 0.63 0.43 0.64 0.11 0.01 0.25 -0.03 0.36 -0.12 0.11 -0.09 0.19 -0.21 0.25 -0.37 0.12 -0.3 0.16 -0.7 0.21 -1.07 0.1 -0.75 0.15 -1.51 0.2 -2.27 0.1 -1.52 0.22 -3.1 0.83 -4.56 l 0.26 -0.61 0.15 0.64 c 0.09 0.39 0.1 0.73 0.12 1.08 0.01 0.35 0.02 0.7 0.02 1.04 0 0.69 -0.02 1.39 -0.04 2.08 -0.02 0.69 -0.05 1.38 -0.09 2.07 -0.01 0.35 -0.06 0.69 0 0.98 0.05 0.3 0.23 0.51 0.47 0.49 0.25 -0.01 0.52 -0.2 0.62 -0.46 0.13 -0.27 0.15 -0.6 0.16 -0.93 0.02 -0.69 0.05 -1.38 0.09 -2.07 0.08 -1.38 0.2 -2.76 0.37 -4.14 l 0.02 -0.15 0.16 -0.01 c 0.12 -0.01 0.25 0.04 0.33 0.12 0.09 0.08 0.13 0.17 0.17 0.25 0.07 0.17 0.09 0.34 0.09 0.51 l -0.01 0.9 -0.02 1.8 -0.01 0.9 c 0 0.3 -0.03 0.61 0.03 0.85 0.05 0.23 0.27 0.42 0.43 0.37 0.17 -0.04 0.29 -0.31 0.34 -0.58 l 1.08 -7.09 c 0.2 -1.18 0.24 -2.36 0.18 -3.55 -0.04 -1.19 -0.18 -2.38 -0.18 -3.59 0.02 -1.21 0.22 -2.41 0.52 -3.58 0.29 -1.17 0.71 -2.3 1.08 -3.43 0.75 -2.27 1.48 -4.55 2.18 -6.84 0.35 -1.15 0.69 -2.29 0.99 -3.45 0.15 -0.58 0.28 -1.16 0.35 -1.75 0.06 -0.59 0.06 -1.19 0.05 -1.78 -0.02 -1.19 -0.17 -2.39 -0.07 -3.6 0.11 -1.21 0.5 -2.36 0.9 -3.48 0.41 -1.13 0.86 -2.24 1.26 -3.36 0.39 -1.13 0.76 -2.28 0.86 -3.47 l 0.07 0 c -0.09 1.2 -0.45 2.36 -0.84 3.49 -0.39 1.13 -0.84 2.25 -1.24 3.37 -0.39 1.13 -0.78 2.27 -0.88 3.46 -0.09 1.19 0.07 2.38 0.09 3.58 0.02 0.6 0.02 1.2 -0.04 1.8 -0.06 0.6 -0.19 1.19 -0.34 1.77 -0.3 1.16 -0.63 2.31 -0.97 3.46 -0.69 2.29 -1.41 4.58 -2.15 6.86 -0.36 1.14 -0.77 2.27 -1.06 3.42 -0.29 1.15 -0.47 2.34 -0.49 3.52 0 1.18 0.15 2.38 0.19 3.58 0.06 1.2 0.03 2.42 -0.17 3.61 l -1.05 7.12 c -0.03 0.16 -0.07 0.32 -0.16 0.47 -0.08 0.15 -0.22 0.32 -0.43 0.38 -0.21 0.06 -0.43 -0.02 -0.57 -0.15 -0.15 -0.12 -0.24 -0.3 -0.28 -0.47 -0.08 -0.35 -0.04 -0.64 -0.05 -0.94 l 0.01 -0.9 0.01 -1.8 0.01 -0.9 c 0.01 -0.26 -0.11 -0.56 -0.21 -0.52 l 0.18 -0.16 c -0.16 1.37 -0.28 2.74 -0.35 4.11 -0.04 0.69 -0.06 1.37 -0.08 2.06 -0.01 0.35 -0.02 0.73 -0.19 1.09 -0.17 0.37 -0.53 0.67 -0.97 0.69 -0.22 0.01 -0.46 -0.09 -0.62 -0.25 -0.16 -0.17 -0.23 -0.38 -0.27 -0.56 -0.07 -0.39 -0.02 -0.74 -0.01 -1.08 l 0.08 -2.07 c 0.02 -0.69 0.03 -1.38 0.03 -2.06 -0.01 -0.67 0 -1.4 -0.12 -2 l 0.41 0.02 c -0.57 1.38 -0.69 2.9 -0.78 4.42 -0.05 0.76 -0.09 1.53 -0.19 2.3 -0.06 0.38 -0.08 0.76 -0.24 1.18 -0.14 0.4 -0.54 0.83 -1.1 0.79 -0.26 -0.02 -0.51 -0.2 -0.64 -0.41 -0.13 -0.21 -0.18 -0.43 -0.21 -0.64 -0.03 -0.21 -0.03 -0.42 -0.02 -0.62 l 0.03 -0.57 0.13 -2.29 0.27 -4.58 0.47 0.15 c -0.14 0.26 -0.24 0.63 -0.33 0.98 -0.09 0.36 -0.17 0.72 -0.25 1.08 l -0.44 2.19 c -0.15 0.74 -0.3 1.46 -0.51 2.2 -0.11 0.36 -0.31 0.84 -0.81 1.03 -0.23 0.09 -0.5 0.11 -0.76 -0.02 -0.27 -0.13 -0.4 -0.42 -0.44 -0.64 -0.04 -0.23 -0.03 -0.43 -0.03 -0.61 0 -0.19 0 -0.38 0.01 -0.57 0.01 -0.38 0.03 -0.75 0.06 -1.13 0.06 -0.75 0.16 -1.5 0.28 -2.24 0.24 -1.48 0.57 -2.94 0.9 -4.4 l 0.51 0.25 c -0.7 0.83 -1.78 1.3 -2.87 1.26 -0.27 -0.02 -0.53 -0.02 -0.85 -0.18 -0.16 -0.08 -0.3 -0.22 -0.39 -0.39 -0.08 -0.16 -0.12 -0.34 -0.12 -0.5 0 -0.32 0.12 -0.64 0.32 -0.88 0.19 -0.23 0.41 -0.4 0.62 -0.55 0.82 -0.52 1.46 -1.21 1.9 -2.05 0.22 -0.41 0.39 -0.87 0.59 -1.34 0.2 -0.47 0.47 -0.94 0.78 -1.34 0.62 -0.82 1.36 -1.5 1.89 -2.28 0.54 -0.78 0.94 -1.66 1.21 -2.58 0.53 -1.85 0.58 -3.83 0.55 -5.79 -0.04 -1.98 -0.04 -3.98 0.05 -5.96 0.09 -1.99 0.25 -3.98 0.64 -5.96 0.38 -1.99 1.16 -3.84 1.54 -5.74 0.09 -0.48 0.17 -0.95 0.2 -1.43 l 0.06 -1.47 c 0.03 -0.98 0.09 -1.96 0.11 -2.95 0 -2 0.18 -4 0.52 -5.97 0.32 -1.98 0.97 -3.87 1.17 -5.81 0.05 -0.48 0.07 -0.97 0.06 -1.45 l -0.07 -1.48 c -0.05 -0.99 -0.09 -1.99 -0.07 -2.99 0.01 -1.99 0.29 -4.03 1.03 -5.9 0.73 -1.87 1.95 -3.58 3.59 -4.78 0.82 -0.59 1.72 -1.07 2.7 -1.35 0.97 -0.29 1.98 -0.38 2.98 -0.41 0.5 -0.01 1 -0.01 1.49 0 0.25 0 0.5 0.02 0.73 -0.01 0.22 -0.02 0.41 -0.13 0.59 -0.28 0.18 -0.16 0.35 -0.34 0.54 -0.51 0.19 -0.17 0.39 -0.32 0.59 -0.47 0.41 -0.29 0.84 -0.54 1.28 -0.77 0.87 -0.47 1.77 -0.89 2.56 -1.48 0.79 -0.58 1.49 -1.33 1.78 -2.28 l 0.07 0.02"/>
+          <path class="fig" d="m 15.88 106.78 c 0.3 -0.55 0.75 -1.05 1.29 -1.4 0.27 -0.16 0.55 -0.31 0.83 -0.47 0.28 -0.15 0.54 -0.29 0.8 -0.45 0.51 -0.31 0.97 -0.7 1.28 -1.2 0.3 -0.5 0.46 -1.11 0.29 -1.72 0.34 0.55 0.3 1.29 0.01 1.89 -0.29 0.61 -0.8 1.07 -1.35 1.41 -0.56 0.34 -1.12 0.58 -1.68 0.84 -0.54 0.28 -1.03 0.65 -1.47 1.1"/>
+          <path class="fig" d="m 18.05 107.99 c 0.33 0.06 0.64 0.1 0.95 0.13 0.31 0.02 0.62 0.03 0.94 0.04 0.32 0.02 0.63 0.01 0.97 0.06 0.34 0.06 0.65 0.17 0.94 0.34 -0.34 0.01 -0.66 0 -0.96 0.01 -0.3 0.02 -0.64 0.04 -0.96 0.03 -0.33 -0.01 -0.66 -0.05 -0.99 -0.14 -0.32 -0.09 -0.64 -0.24 -0.89 -0.47"/>
+          <path class="fig" d="m 30.82 55.21 c 0.07 1.38 0.15 2.76 0.32 4.12 0.09 0.68 0.2 1.36 0.35 2.03 0.16 0.66 0.37 1.31 0.63 1.94 1.05 2.53 2.89 4.66 4.02 7.24 0.58 1.28 0.92 2.68 1.05 4.08 0.14 1.4 0.08 2.81 -0.08 4.2 -0.15 1.39 -0.44 2.74 -0.66 4.1 l -0.72 4.08 c -1.05 5.42 -1.83 10.88 -2.31 16.39 -0.26 2.75 -0.45 5.5 -0.63 8.26 -0.19 2.75 -0.34 5.51 -0.26 8.26 0.04 1.37 0.15 2.75 0.36 4.1 0.2 1.36 0.53 2.68 0.9 4.01 0.74 2.65 1.69 5.25 2.32 7.97 0.32 1.36 0.56 2.74 0.67 4.13 0.12 1.4 0.09 2.79 0.06 4.18 -0.05 2.77 -0.24 5.53 -0.25 8.28 -0.03 2.75 0.11 5.5 0.62 8.18 0.49 2.69 1.32 5.33 2.12 7.97 0.8 2.64 1.56 5.32 1.95 8.08 0.19 1.38 0.24 2.77 0.2 4.16 -0.06 1.37 -0.22 2.78 0.27 4.08 l -0.06 0.03 c -0.54 -1.3 -0.44 -2.75 -0.42 -4.11 0 -1.38 -0.11 -2.75 -0.32 -4.1 -0.44 -2.71 -1.28 -5.34 -2.12 -7.97 -0.84 -2.63 -1.72 -5.26 -2.26 -8 -0.56 -2.74 -0.69 -5.54 -0.67 -8.31 0.02 -2.78 0.17 -5.54 0.25 -8.29 0.03 -1.38 0.07 -2.75 -0.03 -4.11 -0.1 -1.36 -0.32 -2.71 -0.62 -4.04 -0.61 -2.67 -1.49 -5.29 -2.2 -7.98 -0.35 -1.34 -0.66 -2.7 -0.84 -4.08 -0.19 -1.38 -0.27 -2.77 -0.29 -4.16 -0.04 -2.78 0.2 -5.54 0.39 -8.29 l 0.63 -8.26 c 0.24 -2.75 0.48 -5.51 0.8 -8.25 0.31 -2.75 0.73 -5.49 1.18 -8.21 l 0.69 -4.08 c 0.22 -1.36 0.49 -2.72 0.66 -4.08 0.34 -2.7 0.25 -5.5 -0.86 -7.99 -1.07 -2.5 -2.84 -4.7 -3.87 -7.31 -0.25 -0.65 -0.46 -1.32 -0.59 -2.01 -0.13 -0.68 -0.22 -1.37 -0.28 -2.07 -0.13 -1.38 -0.15 -2.77 -0.17 -4.15 l 0.07 0"/>
+          <path class="fig" d="m 42.34 183.62 c -0.11 1.97 -0.6 3.91 -1.34 5.75 -0.19 0.46 -0.4 0.91 -0.63 1.34 -0.22 0.44 -0.51 0.86 -0.74 1.27 -0.23 0.4 -0.4 0.84 -0.28 1.23 0.12 0.38 0.63 0.72 0.96 0.47 l 0.12 -0.09 0.06 0.13 c 0.1 0.23 0.36 0.37 0.62 0.39 0.26 0.02 0.53 -0.08 0.66 -0.28 l 0.1 -0.15 0.12 0.16 c 0.37 0.5 1.24 0.49 1.59 0.06 l 0.14 -0.17 0.19 0.16 c 0.36 0.31 0.78 0.55 1.15 0.51 0.15 -0.01 0.32 -0.11 0.42 -0.24 0.1 -0.14 0.12 -0.26 0.07 -0.34 l 0.63 -0.3 c 0.17 0.32 0.52 0.52 0.91 0.58 0.39 0.06 0.79 -0.03 1.11 -0.24 0.67 -0.43 1.07 -1.3 1.16 -2.18 0.12 -0.88 -0.14 -1.79 -0.44 -2.7 -0.31 -0.91 -0.68 -1.85 -0.73 -2.84 l 0.07 -0.01 c 0.24 0.94 0.71 1.77 1.12 2.66 0.42 0.88 0.77 1.88 0.71 2.95 -0.02 0.53 -0.15 1.05 -0.38 1.54 -0.23 0.49 -0.59 0.94 -1.08 1.25 -0.5 0.32 -1.12 0.41 -1.68 0.3 -0.56 -0.1 -1.13 -0.45 -1.4 -1.01 l 0.63 -0.3 c 0.08 0.19 0.09 0.41 0.05 0.59 -0.05 0.19 -0.14 0.34 -0.26 0.47 -0.23 0.25 -0.54 0.41 -0.89 0.42 -0.32 0 -0.62 -0.1 -0.86 -0.25 -0.24 -0.15 -0.45 -0.33 -0.63 -0.53 l 0.33 -0.01 c -0.32 0.3 -0.75 0.41 -1.15 0.36 -0.39 -0.04 -0.77 -0.25 -1 -0.58 l 0.22 0 c -0.22 0.29 -0.58 0.39 -0.9 0.35 -0.32 -0.03 -0.65 -0.21 -0.81 -0.52 l 0.18 0.04 c -0.24 0.19 -0.58 0.17 -0.82 0.05 -0.25 -0.12 -0.45 -0.33 -0.58 -0.58 -0.24 -0.55 -0.05 -1.12 0.14 -1.58 0.42 -0.91 0.81 -1.76 1.19 -2.65 0.77 -1.77 1.36 -3.61 1.89 -5.5 l 0.07 0.01"/>
+          <path class="fig" d="m 48.86 188.15 c -0.41 -1.7 -0.49 -3.49 -0.37 -5.23 0.02 -0.43 0.03 -0.86 0 -1.29 -0.02 -0.42 -0.1 -0.83 -0.19 -1.26 -0.18 -0.85 -0.4 -1.68 -0.62 -2.53 -0.44 -1.68 -0.92 -3.39 -1.14 -5.14 -0.25 -1.74 -0.38 -3.49 -0.45 -5.24 -0.02 -0.44 -0.03 -0.87 -0.01 -1.33 0.03 -0.45 0.1 -0.9 0.2 -1.33 0.2 -0.87 0.51 -1.7 0.79 -2.52 0.29 -0.82 0.56 -1.64 0.7 -2.49 0.15 -0.85 0.18 -1.72 0.16 -2.58 -0.05 -1.74 -0.41 -3.45 -0.8 -5.14 -0.2 -0.85 -0.39 -1.7 -0.61 -2.54 -0.22 -0.84 -0.44 -1.69 -0.58 -2.57 -0.07 -0.44 -0.12 -0.88 -0.12 -1.33 0 -0.45 0.04 -0.9 0.1 -1.34 0.11 -0.88 0.33 -1.74 0.57 -2.59 0.48 -1.69 1.07 -3.33 1.36 -5.02 0.29 -1.69 0.37 -3.42 0.23 -5.13 -0.07 -0.85 -0.19 -1.7 -0.36 -2.54 -0.18 -0.87 -0.29 -1.76 -0.34 -2.65 -0.21 -3.57 0.54 -7.02 0.76 -10.48 0.27 -3.47 0.35 -6.96 0.25 -10.44 l 0.07 0 c 0.31 3.48 0.38 6.98 0.22 10.48 -0.08 1.75 -0.26 3.5 -0.41 5.23 -0.15 1.73 -0.29 3.46 -0.17 5.17 0.05 0.86 0.16 1.7 0.34 2.54 0.18 0.87 0.31 1.75 0.37 2.64 0.12 1.77 0.02 3.56 -0.31 5.3 -0.32 1.76 -0.96 3.41 -1.47 5.06 -0.25 0.83 -0.48 1.66 -0.63 2.5 -0.07 0.42 -0.13 0.85 -0.14 1.27 -0.01 0.42 0.02 0.85 0.07 1.28 0.11 0.85 0.3 1.7 0.5 2.55 l 0.56 2.56 c 0.37 1.71 0.7 3.43 0.8 5.19 0.04 0.88 0.01 1.76 -0.12 2.64 -0.11 0.88 -0.36 1.73 -0.62 2.57 -0.26 0.84 -0.53 1.66 -0.69 2.5 -0.08 0.42 -0.14 0.84 -0.14 1.26 -0.01 0.41 0.03 0.85 0.05 1.28 0.08 1.73 0.27 3.46 0.48 5.19 0.19 1.72 0.63 3.39 1.05 5.09 0.21 0.85 0.4 1.71 0.55 2.57 0.07 0.43 0.15 0.88 0.15 1.33 0.01 0.45 -0.01 0.89 -0.05 1.33 -0.07 0.87 -0.16 1.73 -0.14 2.6 0.01 0.87 0.09 1.73 0.22 2.6 l -0.07 0.01"/>
+          <path class="fig" d="m 21.85 99 c 0.07 -0.62 0.16 -1.23 0.26 -1.84 0.1 -0.61 0.22 -1.22 0.33 -1.83 0.13 -0.6 0.25 -1.21 0.39 -1.81 0.14 -0.6 0.28 -1.21 0.45 -1.8 -0.07 0.62 -0.16 1.23 -0.26 1.84 -0.1 0.61 -0.22 1.22 -0.33 1.83 -0.13 0.6 -0.25 1.21 -0.39 1.81 -0.14 0.6 -0.28 1.2 -0.45 1.8"/>
+          <path class="fig" d="m 22.32 98.79 c -0.01 -0.23 0.01 -0.44 0.03 -0.66 0.02 -0.22 0.06 -0.43 0.1 -0.64 0.05 -0.21 0.09 -0.42 0.16 -0.63 0.06 -0.21 0.13 -0.42 0.22 -0.62 0.01 0.22 -0.01 0.44 -0.03 0.66 -0.02 0.22 -0.06 0.43 -0.1 0.65 -0.05 0.21 -0.09 0.43 -0.16 0.64 -0.06 0.21 -0.13 0.42 -0.22 0.62"/>
+          <path class="fig" d="m 35.27 56.72 c -0.18 0.01 -0.36 0.03 -0.53 0.06 -0.17 0.03 -0.35 0.06 -0.48 0.14 -0.28 0.16 -0.1 0.49 0.22 0.58 0.32 0.12 0.66 0.21 0.97 0.12 0.15 -0.04 0.28 -0.14 0.36 -0.28 0.08 -0.14 0.1 -0.33 0 -0.48 0.15 0.11 0.18 0.35 0.12 0.53 -0.07 0.18 -0.22 0.35 -0.41 0.42 -0.39 0.15 -0.78 0.05 -1.13 -0.07 -0.17 -0.07 -0.38 -0.19 -0.46 -0.41 -0.04 -0.11 -0.05 -0.24 0.01 -0.35 0.05 -0.11 0.15 -0.19 0.24 -0.23 0.38 -0.15 0.75 -0.1 1.1 -0.03"/>
+          <path class="fig" d="m 34.8 57.25 c -0.04 -0.03 -0.08 -0.09 -0.03 -0.14 0.03 -0.05 0.09 -0.08 0.14 -0.1 0.12 -0.04 0.24 -0.02 0.35 0.06 0.06 0.04 0.09 0.15 0.04 0.22 -0.06 0.07 -0.13 0.07 -0.18 0.06 -0.11 0 -0.22 -0.04 -0.31 -0.1 z m 0 0 c 0.09 0.05 0.2 0.07 0.3 0.04 0.11 -0.02 0.12 -0.08 0.07 -0.12 -0.06 -0.05 -0.16 -0.09 -0.25 -0.09 -0.05 0 -0.1 0.01 -0.14 0.04 -0.04 0.04 -0.02 0.1 0.02 0.13"/>
+          <path class="fig" d="m 39.48 87.14 c 1.04 0.79 1.91 1.79 2.65 2.87 0.73 1.09 1.33 2.26 1.67 3.53 -0.71 -1.1 -1.37 -2.19 -2.09 -3.25 -0.71 -1.07 -1.48 -2.09 -2.23 -3.15"/>
+          <path class="fig" d="m 45.88 137.03 c -0.3 0.22 -0.69 0.27 -1.07 0.24 -0.38 -0.05 -0.74 -0.2 -1.05 -0.44 -0.62 -0.46 -1.01 -1.12 -1.36 -1.74 -0.7 -1.27 -1.19 -2.66 -1.35 -4.09 0.54 1.33 1.09 2.62 1.78 3.85 0.34 0.62 0.68 1.23 1.17 1.68 0.48 0.43 1.17 0.73 1.87 0.5"/>
+          <path class="fig" d="m 41.12 134.53 c -0.06 0.68 -0.54 1.31 -1.17 1.64 -0.63 0.32 -1.42 0.34 -2.01 -0.02 0.67 0.06 1.29 -0.04 1.84 -0.32 0.55 -0.28 0.99 -0.73 1.34 -1.3"/>
+          <path class="fig" d="m 44.37 141.5 c -0.01 0.44 -0.15 0.88 -0.35 1.28 -0.2 0.4 -0.49 0.77 -0.81 1.09 -0.66 0.63 -1.47 1.07 -2.3 1.4 l 0.13 -0.33 c 0.67 1.38 1.14 2.85 1.39 4.35 l -0.34 -0.02 c 0.29 -0.78 0.52 -1.59 0.69 -2.41 -0.01 0.85 -0.13 1.7 -0.36 2.52 l -0.17 0.63 -0.17 -0.65 c -0.37 -1.45 -0.87 -2.86 -1.49 -4.22 l -0.11 -0.24 0.24 -0.09 c 0.8 -0.31 1.58 -0.67 2.24 -1.21 0.65 -0.53 1.19 -1.24 1.4 -2.1"/>
+          <path class="fig" d="m 45.74 194.18 c -0.09 -0.31 -0.15 -0.64 -0.1 -0.99 0.05 -0.34 0.19 -0.63 0.33 -0.89 0.14 -0.26 0.28 -0.51 0.35 -0.78 0.07 -0.27 0.08 -0.57 -0.07 -0.83 0.2 0.23 0.25 0.56 0.22 0.86 -0.02 0.31 -0.13 0.6 -0.21 0.88 -0.09 0.28 -0.16 0.55 -0.15 0.8 0.01 0.25 0.1 0.49 0.22 0.73 l -0.59 0.23"/>
+          <path class="fig" d="m 43.57 194.1 c 0 -0.14 0.01 -0.29 0.04 -0.44 0.03 -0.15 0.1 -0.3 0.19 -0.42 0.18 -0.24 0.4 -0.39 0.54 -0.64 -0.08 0.27 -0.27 0.5 -0.38 0.73 -0.11 0.23 -0.07 0.47 -0.01 0.74 l -0.38 0.03"/>
+          <path class="fig" d="m 41.75 193.98 c -0.03 -0.34 0.11 -0.63 0.27 -0.87 0.16 -0.25 0.34 -0.47 0.45 -0.73 -0.08 0.28 -0.23 0.53 -0.34 0.79 -0.11 0.25 -0.19 0.53 -0.13 0.77 l -0.25 0.04"/>
+          <path class="fig" d="m 40.31 193.82 c -0.01 -0.18 0.02 -0.35 0.08 -0.51 0.06 -0.17 0.19 -0.28 0.29 -0.42 0.22 -0.25 0.45 -0.49 0.58 -0.8 -0.11 0.31 -0.33 0.58 -0.53 0.83 -0.09 0.13 -0.2 0.26 -0.25 0.41 -0.05 0.15 -0.07 0.31 -0.05 0.46 l -0.13 0.01"/>
+          <path class="fig" d="m 46.23 192.84 c 0.25 -0.15 0.55 -0.22 0.85 -0.25 0.3 -0.03 0.6 0 0.89 0.05 l -0.14 0.08 c 0.03 -0.07 0.01 -0.18 -0.04 -0.26 -0.06 -0.08 -0.16 -0.14 -0.27 -0.18 -0.23 -0.08 -0.49 -0.08 -0.75 0 0.21 -0.17 0.51 -0.24 0.8 -0.18 0.14 0.02 0.29 0.09 0.4 0.22 0.11 0.13 0.16 0.31 0.09 0.49 l -0.04 0.1 -0.1 -0.02 c -0.28 -0.05 -0.56 -0.09 -0.84 -0.1 -0.28 -0.01 -0.56 0.01 -0.85 0.05"/>
+          <path class="fig" d="m 62.68 37.79 c -2.05 0.67 -4.22 0.92 -6.36 1.07 l -3.22 0.22 c -0.27 0.02 -0.53 0.04 -0.75 0.12 -0.23 0.07 -0.4 0.22 -0.57 0.42 -0.17 0.19 -0.34 0.43 -0.6 0.6 -0.27 0.18 -0.58 0.21 -0.83 0.25 l -0.02 0 h -0.02 l -0.13 0 h -0.02 l -0.02 0 c -0.25 -0.05 -0.56 -0.08 -0.83 -0.25 -0.26 -0.18 -0.43 -0.41 -0.6 -0.6 -0.17 -0.2 -0.34 -0.34 -0.57 -0.42 -0.23 -0.08 -0.49 -0.1 -0.75 -0.11 -1.07 -0.08 -2.14 -0.13 -3.22 -0.22 -1.07 -0.08 -2.15 -0.18 -3.22 -0.34 -1.07 -0.17 -2.12 -0.4 -3.15 -0.73 1.05 0.25 2.1 0.45 3.17 0.56 1.07 0.12 2.14 0.19 3.21 0.24 1.07 0.04 2.15 0.1 3.22 0.16 0.27 0.02 0.55 0.03 0.84 0.12 0.29 0.08 0.55 0.3 0.72 0.51 0.18 0.21 0.35 0.41 0.54 0.53 0.19 0.12 0.43 0.15 0.71 0.2 l -0.03 0 0.13 0 -0.03 0 c 0.28 -0.05 0.52 -0.07 0.71 -0.2 0.19 -0.12 0.35 -0.33 0.54 -0.53 0.18 -0.21 0.43 -0.42 0.72 -0.51 0.29 -0.09 0.57 -0.11 0.84 -0.12 1.08 -0.07 2.15 -0.12 3.22 -0.17 1.07 -0.05 2.14 -0.12 3.21 -0.24 1.07 -0.11 2.12 -0.31 3.17 -0.56"/>
+          <path class="fig" d="m 53.66 97.91 c 0 0.79 -0.05 1.58 -0.07 2.37 -0.04 0.79 -0.07 1.58 -0.2 2.38 -0.14 0.79 -0.36 1.62 -0.92 2.31 -0.54 0.7 -1.46 1.07 -2.29 1.13 -0.4 0.03 -0.87 0.04 -1.32 -0.15 -0.44 -0.18 -0.79 -0.51 -1.03 -0.86 -0.25 -0.36 -0.43 -0.74 -0.57 -1.12 -0.15 -0.38 -0.26 -0.77 -0.36 -1.16 -0.4 -1.57 -0.45 -3.16 -0.45 -4.74 0.27 1.56 0.5 3.12 0.97 4.59 0.25 0.72 0.51 1.47 0.94 2.04 0.21 0.28 0.47 0.51 0.76 0.62 0.29 0.12 0.63 0.12 1.01 0.08 0.73 -0.05 1.4 -0.32 1.85 -0.86 0.47 -0.53 0.71 -1.26 0.89 -2 0.17 -0.75 0.27 -1.53 0.39 -2.31 0.13 -0.78 0.25 -1.56 0.4 -2.33"/>
+          <path class="fig" d="m 55.74 28.46 c -0.38 0.77 -0.9 1.45 -1.45 2.09 -0.56 0.63 -1.12 1.26 -1.76 1.82 -0.64 0.55 -1.38 1.02 -2.22 1.17 -0.82 0.16 -1.75 0.02 -2.39 -0.55 0.65 0.55 1.57 0.66 2.37 0.49 0.82 -0.17 1.54 -0.65 2.15 -1.21 0.61 -0.56 1.16 -1.21 1.7 -1.85 0.53 -0.65 1.01 -1.33 1.36 -2.08 l 0.23 0.11"/>
+          <path class="fig" d="m 45.94 32.77 c 0.72 2.1 1.54 4.16 2.45 6.17 l -0.35 0.15 c -0.8 -2.07 -1.51 -4.18 -2.11 -6.31"/>
+          <path class="fig" d="m 51.78 39.11 c 0.69 -1.55 1.22 -3.17 1.57 -4.85 -0.23 1.69 -0.64 3.37 -1.22 4.99 l -0.35 -0.14"/>
+          <path class="fig" d="m 49.66 34.53 c -0.05 0.28 0.02 0.56 0.18 0.76 0.16 0.2 0.39 0.33 0.64 0.37 l 0.22 0.03 -0.14 0.17 c -0.08 0.1 -0.16 0.2 -0.25 0.3 -0.09 0.11 -0.16 0.16 -0.16 0.26 -0.02 0.26 -0.04 0.52 -0.08 0.78 -0.05 -0.26 -0.08 -0.52 -0.11 -0.77 -0.03 -0.17 0.1 -0.33 0.17 -0.41 0.08 -0.11 0.16 -0.21 0.24 -0.31 l 0.08 0.2 c -0.32 -0.04 -0.61 -0.23 -0.77 -0.5 -0.16 -0.27 -0.17 -0.62 -0.01 -0.87"/>
+          <path class="fig" d="m 50.33 45.99 c 0.24 2.12 0.33 4.26 0.38 6.39 0 1.07 -0.03 2.15 -0.23 3.22 -0.19 1.06 -0.58 2.12 -1.24 2.97 0.49 -0.96 0.72 -1.99 0.85 -3.03 0.11 -1.04 0.13 -2.1 0.12 -3.16 -0.03 -2.13 -0.03 -4.25 0.13 -6.39"/>
+          <path class="fig" d="m 50.54 54.43 c 0.05 1.51 0.61 3.03 1.58 4.25 -1.07 -1.13 -1.78 -2.63 -1.96 -4.22 l 0.38 -0.03"/>
+          <path class="fig" d="m 40.45 39.98 c -0.57 -0.21 -1.16 -0.3 -1.76 -0.34 -0.59 -0.03 -1.19 -0.02 -1.8 -0.01 l 0.08 -0.36 c 0.48 0.23 0.93 0.52 1.33 0.86 l 0.23 0.2 -0.28 0.09 c -0.35 0.11 -0.7 0.26 -1.02 0.45 -0.32 0.19 -0.63 0.42 -0.92 0.69 0.21 -0.32 0.48 -0.62 0.8 -0.86 0.31 -0.24 0.66 -0.45 1.03 -0.59 l -0.05 0.28 c -0.41 -0.3 -0.84 -0.56 -1.29 -0.78 l -0.74 -0.36 0.82 0 c 0.6 0 1.22 0 1.83 0.1 0.61 0.09 1.22 0.27 1.73 0.62"/>
+          <path class="fig" d="m 61.02 40.05 c 0.39 -0.18 0.8 -0.32 1.23 -0.4 0.42 -0.09 0.86 -0.13 1.29 -0.12 l 0.32 0.01 -0.25 0.21 -0.63 0.53 -0.07 -0.22 c 0.48 0.05 0.98 0.11 1.45 0.25 0.47 0.14 0.94 0.36 1.28 0.72 -0.82 -0.56 -1.8 -0.63 -2.76 -0.72 l -0.3 -0.03 0.23 -0.19 0.63 -0.53 0.07 0.21 c -0.42 -0.02 -0.84 0 -1.26 0.04 -0.42 0.05 -0.84 0.13 -1.25 0.23"/>
+          <path class="fig" d="m 47.41 126.79 c -1.35 -3.92 -2.24 -7.97 -2.94 -12.03 0.83 4.04 1.84 8.06 3.29 11.9 l -0.35 0.13"/>
+          <path class="fig" d="m 35.87 62.19 c 0.18 0.24 0.35 0.49 0.57 0.65 0.11 0.08 0.22 0.13 0.36 0.15 0.13 0.02 0.34 0.07 0.46 0.2 0.24 0.27 0.28 0.57 0.45 0.78 0.16 0.22 0.4 0.39 0.69 0.48 -0.3 0.01 -0.61 -0.13 -0.83 -0.36 -0.23 -0.23 -0.31 -0.56 -0.48 -0.73 -0.08 -0.09 -0.18 -0.12 -0.33 -0.15 -0.15 -0.04 -0.32 -0.11 -0.43 -0.23 -0.24 -0.23 -0.36 -0.51 -0.44 -0.8"/>
+          <path class="fig" d="m 46.34 166.17 c -0.52 -1.14 -0.88 -2.34 -1.07 -3.56 0.32 1.19 0.79 2.34 1.4 3.39 l -0.33 0.17"/>
+          <path class="fig" d="m 40.1 69.32 c 0.62 -0.22 1.19 -0.53 1.72 -0.91 0.53 -0.37 1.03 -0.79 1.52 -1.21 0.5 -0.42 1 -0.85 1.55 -1.23 0.54 -0.38 1.12 -0.72 1.75 -0.93 -0.56 0.34 -1.08 0.73 -1.58 1.16 l -1.48 1.29 c -0.51 0.42 -1.03 0.84 -1.61 1.17 -0.58 0.33 -1.21 0.59 -1.87 0.66"/>
+          <path class="fig" d="m 50.21 69.48 c 0.05 0.67 0.08 1.34 0.09 2.01 0.01 0.67 0 1.34 -0.01 2.01 -0.03 0.67 -0.05 1.34 -0.1 2.01 -0.05 0.67 -0.11 1.34 -0.2 2 -0.01 -0.67 0 -1.34 0.01 -2.01 l 0.04 -2.01 0.07 -2.01 c 0.03 -0.67 0.06 -1.34 0.1 -2.01"/>
+          <path class="fig" d="m 50.11 81.94 c 0.05 0.88 0.07 1.77 0.08 2.65 0.02 0.89 0.01 1.77 0.02 2.66 -0.01 0.88 -0.02 1.77 -0.04 2.65 -0.02 0.88 -0.05 1.77 -0.11 2.65 -0.05 -0.89 -0.07 -1.77 -0.09 -2.66 -0.02 -0.89 -0.01 -1.77 -0.02 -2.65 0.01 -0.88 0.02 -1.77 0.04 -2.65 0.02 -0.88 0.05 -1.77 0.11 -2.65"/>
+          <path class="fig" d="m 26.56 74.48 c -0.14 0.33 -0.31 0.64 -0.49 0.95 -0.18 0.31 -0.37 0.59 -0.54 0.89 -0.35 0.59 -0.65 1.18 -0.64 1.9 -0.15 -0.33 -0.18 -0.72 -0.1 -1.08 0.08 -0.36 0.23 -0.7 0.41 -1.01 0.38 -0.61 0.83 -1.14 1.35 -1.64"/>
+          <path class="fig" d="m 21.69 101.92 c 0.03 -0.08 0.09 -0.14 0.15 -0.19 0.06 -0.05 0.14 -0.08 0.22 -0.09 0.08 -0.01 0.16 -0.02 0.23 0.01 0.08 0.02 0.15 0.05 0.21 0.12 -0.08 0.04 -0.15 0.06 -0.21 0.08 -0.06 0.02 -0.13 0.03 -0.19 0.05 -0.06 0.01 -0.12 0.02 -0.19 0.03 -0.07 0.01 -0.14 0.01 -0.22 0.01"/>
+          <path class="fig" d="m 30.16 49.01 c 0.02 0.57 0.02 1.14 0.06 1.7 0.03 0.57 0.07 1.13 0.15 1.69 0.15 1.11 0.39 2.21 0.86 3.22 0.44 1.01 1.13 1.91 1.97 2.63 0.84 0.72 1.85 1.26 2.95 1.56 -0.57 -0.06 -1.13 -0.22 -1.66 -0.43 -0.53 -0.23 -1.03 -0.52 -1.5 -0.87 -0.93 -0.7 -1.68 -1.65 -2.16 -2.72 -0.48 -1.07 -0.72 -2.22 -0.79 -3.37 -0.08 -1.15 -0.02 -2.29 0.13 -3.43"/>
+          <path class="fig" d="m 29.57 72.49 c -0.46 0.54 -1.1 0.91 -1.78 1.12 -0.68 0.2 -1.42 0.26 -2.11 0.07 0.7 -0.08 1.36 -0.19 2.01 -0.39 0.65 -0.19 1.26 -0.47 1.88 -0.8"/>
+          <path class="fig" d="m 36.44 65.62 c 0.2 0.3 0.42 0.55 0.68 0.75 0.26 0.21 0.55 0.36 0.89 0.49 -0.36 0.05 -0.74 -0.09 -1.03 -0.31 -0.29 -0.23 -0.51 -0.57 -0.54 -0.93"/>
+          <path class="fig" d="m 56.3 28.3 c -0.02 0.76 -0.03 1.52 -0.04 2.28 0 0.76 0 1.52 0.04 2.28 0.02 0.76 0.07 1.52 0.13 2.27 0.06 0.76 0.15 1.51 0.26 2.27 -0.21 -0.73 -0.34 -1.49 -0.45 -2.25 -0.1 -0.76 -0.16 -1.52 -0.19 -2.28 -0.02 -0.76 -0.02 -1.53 0.02 -2.29 0.04 -0.76 0.11 -1.52 0.23 -2.28"/>
+          <path class="fig" d="m 56.23 31.34 c 0.29 0.95 1 1.7 1.78 2.28 0.79 0.59 1.69 1.01 2.56 1.48 0.44 0.24 0.87 0.49 1.28 0.77 0.2 0.15 0.4 0.3 0.59 0.47 0.19 0.17 0.36 0.35 0.54 0.51 0.18 0.16 0.37 0.27 0.59 0.28 0.22 0.02 0.48 0 0.73 0.01 0.5 -0.01 0.99 -0.01 1.49 0 1 0.03 2 0.12 2.98 0.41 0.97 0.28 1.88 0.76 2.7 1.35 1.64 1.19 2.86 2.9 3.59 4.78 0.75 1.88 1.03 3.91 1.03 5.9 0.01 1 -0.03 1.99 -0.07 2.99 l -0.07 1.48 c -0.01 0.48 0.01 0.97 0.06 1.45 0.2 1.93 0.85 3.83 1.17 5.81 0.34 1.97 0.52 3.97 0.52 5.97 0.01 0.99 0.07 1.97 0.11 2.95 l 0.06 1.47 c 0.03 0.48 0.1 0.95 0.2 1.43 0.38 1.9 1.16 3.75 1.54 5.74 0.39 1.97 0.55 3.97 0.64 5.96 0.09 1.99 0.09 3.98 0.05 5.96 -0.03 1.97 0.02 3.94 0.55 5.79 0.27 0.92 0.67 1.8 1.21 2.58 0.53 0.78 1.27 1.45 1.89 2.28 0.31 0.41 0.58 0.88 0.78 1.34 0.2 0.47 0.37 0.93 0.59 1.34 0.44 0.83 1.08 1.52 1.9 2.05 0.21 0.15 0.43 0.31 0.62 0.55 0.2 0.23 0.32 0.55 0.32 0.88 0 0.16 -0.03 0.34 -0.12 0.5 -0.08 0.16 -0.23 0.31 -0.39 0.39 -0.32 0.16 -0.58 0.16 -0.85 0.18 -1.09 0.04 -2.17 -0.43 -2.87 -1.26 l 0.51 -0.25 c 0.33 1.45 0.66 2.91 0.9 4.4 0.12 0.74 0.22 1.49 0.28 2.24 0.03 0.38 0.05 0.75 0.07 1.13 0.01 0.19 0.01 0.38 0.01 0.57 0 0.19 0.01 0.38 -0.03 0.61 -0.04 0.22 -0.17 0.51 -0.44 0.64 -0.26 0.13 -0.54 0.11 -0.76 0.02 -0.5 -0.19 -0.7 -0.67 -0.81 -1.03 -0.21 -0.74 -0.36 -1.47 -0.51 -2.2 l -0.44 -2.19 c -0.08 -0.36 -0.16 -0.72 -0.25 -1.08 -0.09 -0.35 -0.19 -0.72 -0.33 -0.98 l 0.47 -0.15 0.27 4.58 0.13 2.29 0.03 0.57 c 0.01 0.2 0.01 0.41 -0.02 0.62 -0.03 0.21 -0.08 0.43 -0.21 0.64 -0.12 0.21 -0.37 0.39 -0.64 0.41 -0.55 0.04 -0.95 -0.39 -1.1 -0.79 -0.15 -0.41 -0.18 -0.79 -0.24 -1.18 -0.1 -0.77 -0.14 -1.54 -0.19 -2.3 -0.09 -1.52 -0.21 -3.04 -0.78 -4.42 l 0.41 -0.02 c -0.12 0.6 -0.12 1.33 -0.12 2 0 0.69 0.01 1.37 0.03 2.06 l 0.08 2.07 c 0.01 0.34 0.06 0.69 -0.01 1.08 -0.04 0.19 -0.11 0.4 -0.27 0.56 -0.15 0.17 -0.39 0.26 -0.62 0.25 -0.45 -0.02 -0.81 -0.32 -0.97 -0.69 -0.17 -0.36 -0.18 -0.74 -0.19 -1.09 -0.02 -0.69 -0.04 -1.38 -0.08 -2.06 -0.07 -1.37 -0.19 -2.75 -0.35 -4.11 l 0.18 0.16 c -0.1 -0.04 -0.23 0.26 -0.21 0.52 l 0.01 0.9 0.01 1.8 0.01 0.9 c -0.01 0.3 0.03 0.59 -0.05 0.94 -0.04 0.17 -0.14 0.35 -0.28 0.47 -0.14 0.12 -0.36 0.2 -0.57 0.15 -0.21 -0.05 -0.35 -0.22 -0.43 -0.38 -0.08 -0.16 -0.12 -0.32 -0.16 -0.47 l -1.05 -7.12 c -0.19 -1.19 -0.23 -2.41 -0.17 -3.61 0.05 -1.2 0.2 -2.4 0.19 -3.58 -0.02 -1.19 -0.2 -2.37 -0.49 -3.52 -0.28 -1.16 -0.7 -2.28 -1.06 -3.42 -0.74 -2.28 -1.46 -4.56 -2.15 -6.86 -0.34 -1.15 -0.68 -2.3 -0.97 -3.46 -0.15 -0.58 -0.28 -1.17 -0.34 -1.77 -0.06 -0.6 -0.06 -1.21 -0.04 -1.8 0.02 -1.2 0.18 -2.39 0.09 -3.58 -0.1 -1.19 -0.48 -2.33 -0.88 -3.46 -0.4 -1.13 -0.85 -2.24 -1.24 -3.37 -0.39 -1.13 -0.75 -2.29 -0.84 -3.49 l 0.07 0 c 0.1 1.19 0.46 2.34 0.86 3.47 0.4 1.13 0.85 2.24 1.26 3.36 0.4 1.13 0.8 2.28 0.9 3.48 0.1 1.21 -0.06 2.4 -0.07 3.6 -0.01 0.6 -0.01 1.19 0.05 1.78 0.06 0.59 0.19 1.17 0.35 1.75 0.3 1.16 0.64 2.3 0.99 3.45 0.7 2.29 1.44 4.57 2.18 6.84 0.37 1.14 0.79 2.26 1.08 3.43 0.3 1.17 0.49 2.37 0.52 3.58 0.01 1.22 -0.14 2.4 -0.18 3.59 -0.05 1.19 -0.01 2.38 0.18 3.55 l 1.08 7.09 c 0.05 0.27 0.17 0.55 0.34 0.58 0.17 0.05 0.39 -0.13 0.43 -0.37 0.06 -0.24 0.03 -0.55 0.03 -0.85 l -0.01 -0.9 -0.02 -1.8 -0.01 -0.9 c 0 -0.17 0.02 -0.34 0.09 -0.51 0.03 -0.09 0.08 -0.18 0.17 -0.25 0.08 -0.08 0.22 -0.13 0.33 -0.12 l 0.16 0.01 0.02 0.15 c 0.17 1.37 0.29 2.75 0.37 4.14 0.04 0.69 0.07 1.38 0.09 2.07 0.01 0.34 0.03 0.67 0.16 0.93 0.11 0.26 0.38 0.45 0.63 0.46 0.25 0.01 0.42 -0.19 0.47 -0.49 0.06 -0.3 0.02 -0.64 0 -0.98 -0.04 -0.69 -0.07 -1.38 -0.09 -2.07 -0.02 -0.69 -0.04 -1.38 -0.04 -2.08 0 -0.35 0.01 -0.69 0.02 -1.04 0.02 -0.35 0.03 -0.69 0.12 -1.08 l 0.15 -0.64 0.26 0.61 c 0.61 1.46 0.74 3.04 0.83 4.56 0.05 0.76 0.1 1.52 0.2 2.27 0.06 0.37 0.09 0.76 0.21 1.07 0.06 0.15 0.14 0.28 0.25 0.37 0.11 0.09 0.25 0.14 0.36 0.12 0.24 -0.02 0.39 -0.29 0.43 -0.64 0.02 -0.17 0.02 -0.35 0.01 -0.53 l -0.04 -0.57 -0.14 -2.29 -0.29 -4.58 -0.07 -1.13 0.54 0.98 c 0.22 0.4 0.3 0.75 0.4 1.12 0.09 0.37 0.18 0.73 0.25 1.1 l 0.45 2.19 c 0.15 0.72 0.31 1.46 0.51 2.15 0.1 0.33 0.26 0.61 0.49 0.69 0.12 0.05 0.25 0.04 0.32 0 0.07 -0.04 0.13 -0.12 0.15 -0.26 0.03 -0.14 0.02 -0.32 0.02 -0.5 0 -0.18 0 -0.37 -0.01 -0.55 -0.01 -0.37 -0.04 -0.73 -0.07 -1.1 -0.06 -0.73 -0.16 -1.47 -0.29 -2.2 -0.24 -1.46 -0.58 -2.91 -0.92 -4.36 l -0.27 -1.18 0.79 0.93 c 0.58 0.68 1.5 1.08 2.39 1.04 0.22 -0.01 0.47 -0.04 0.59 -0.11 0.12 -0.06 0.18 -0.18 0.18 -0.35 0.01 -0.36 -0.28 -0.64 -0.69 -0.91 -0.86 -0.54 -1.62 -1.33 -2.11 -2.26 -0.24 -0.46 -0.42 -0.94 -0.62 -1.38 -0.19 -0.44 -0.42 -0.83 -0.72 -1.21 -0.57 -0.76 -1.32 -1.43 -1.92 -2.29 -0.59 -0.84 -1.03 -1.79 -1.32 -2.77 -0.57 -1.97 -0.61 -4.01 -0.58 -6 0.04 -1.98 0.04 -3.95 -0.05 -5.92 -0.09 -1.97 -0.25 -3.94 -0.63 -5.85 -0.36 -1.91 -1.14 -3.75 -1.54 -5.74 -0.1 -0.5 -0.18 -1 -0.21 -1.51 l -0.05 -1.5 c -0.03 -1 -0.07 -2 -0.08 -2.99 0.01 -1.96 -0.14 -3.93 -0.46 -5.87 -0.29 -1.94 -0.93 -3.83 -1.12 -5.85 -0.05 -0.5 -0.07 -1.01 -0.05 -1.52 l 0.08 -1.49 c 0.06 -0.99 0.1 -1.97 0.1 -2.96 0.01 -1.96 -0.24 -3.93 -0.95 -5.75 -0.69 -1.82 -1.85 -3.47 -3.41 -4.64 -0.78 -0.58 -1.65 -1.05 -2.58 -1.32 -0.93 -0.28 -1.91 -0.39 -2.89 -0.44 -0.49 -0.02 -0.99 -0.03 -1.48 -0.03 -0.25 -0.01 -0.49 0.01 -0.76 -0.02 -0.27 -0.03 -0.53 -0.18 -0.72 -0.36 -0.68 -0.74 -1.47 -1.29 -2.35 -1.77 -0.86 -0.49 -1.76 -0.92 -2.55 -1.54 -0.79 -0.6 -1.49 -1.39 -1.77 -2.36 l 0.07 -0.02"/>
+          <path class="fig" d="m 84.12 106.78 c -0.44 -0.45 -0.93 -0.82 -1.47 -1.1 -0.56 -0.26 -1.12 -0.5 -1.68 -0.84 -0.54 -0.34 -1.06 -0.8 -1.35 -1.41 -0.29 -0.59 -0.33 -1.34 0.01 -1.89 -0.17 0.61 0 1.23 0.29 1.72 0.3 0.5 0.77 0.89 1.28 1.2 0.25 0.17 0.52 0.3 0.8 0.45 0.28 0.16 0.55 0.31 0.83 0.47 0.54 0.35 0.99 0.84 1.29 1.4"/>
+          <path class="fig" d="m 81.95 107.99 c -0.25 0.23 -0.56 0.38 -0.89 0.47 -0.32 0.09 -0.66 0.13 -0.99 0.14 -0.33 0.01 -0.66 -0.02 -0.96 -0.03 -0.31 -0.01 -0.63 0.01 -0.96 -0.01 0.29 -0.17 0.6 -0.28 0.94 -0.34 0.34 -0.06 0.65 -0.05 0.97 -0.06 0.32 -0.01 0.63 -0.02 0.94 -0.04 0.31 -0.02 0.62 -0.07 0.95 -0.13"/>
+          <path class="fig" d="m 69.25 55.21 c -0.02 1.38 -0.04 2.76 -0.17 4.15 -0.06 0.69 -0.15 1.38 -0.28 2.07 -0.13 0.69 -0.34 1.36 -0.59 2.01 -1.03 2.62 -2.81 4.81 -3.87 7.31 -1.1 2.49 -1.2 5.3 -0.86 7.99 0.17 1.35 0.44 2.71 0.66 4.08 l 0.69 4.08 c 0.45 2.72 0.88 5.47 1.18 8.21 0.32 2.75 0.56 5.5 0.8 8.25 l 0.63 8.26 c 0.19 2.75 0.44 5.51 0.39 8.29 -0.02 1.39 -0.1 2.78 -0.29 4.16 -0.18 1.38 -0.49 2.75 -0.84 4.08 -0.7 2.68 -1.59 5.3 -2.2 7.98 -0.3 1.34 -0.52 2.68 -0.62 4.04 -0.1 1.35 -0.06 2.73 -0.03 4.11 0.08 2.75 0.23 5.51 0.25 8.29 0.01 2.77 -0.11 5.57 -0.67 8.31 -0.54 2.74 -1.42 5.38 -2.26 8 -0.84 2.63 -1.67 5.26 -2.12 7.97 -0.22 1.36 -0.32 2.73 -0.32 4.1 0.01 1.36 0.12 2.81 -0.42 4.11 l -0.06 -0.03 c 0.49 -1.3 0.33 -2.71 0.27 -4.08 -0.05 -1.39 0 -2.78 0.2 -4.16 0.39 -2.76 1.15 -5.44 1.95 -8.08 0.8 -2.64 1.63 -5.28 2.12 -7.97 0.51 -2.69 0.65 -5.43 0.62 -8.18 -0.02 -2.75 -0.2 -5.5 -0.25 -8.28 -0.02 -1.38 -0.05 -2.77 0.06 -4.18 0.11 -1.4 0.36 -2.78 0.67 -4.13 0.63 -2.72 1.57 -5.32 2.32 -7.97 0.38 -1.32 0.7 -2.65 0.9 -4.01 0.21 -1.35 0.31 -2.73 0.36 -4.1 0.08 -2.75 -0.07 -5.51 -0.26 -8.26 -0.18 -2.76 -0.37 -5.51 -0.63 -8.26 -0.48 -5.5 -1.26 -10.97 -2.31 -16.39 l -0.72 -4.08 c -0.23 -1.36 -0.51 -2.71 -0.66 -4.1 -0.16 -1.39 -0.21 -2.79 -0.08 -4.2 0.13 -1.4 0.47 -2.79 1.05 -4.08 1.14 -2.58 2.97 -4.71 4.02 -7.24 0.26 -0.63 0.47 -1.28 0.63 -1.94 0.15 -0.67 0.27 -1.35 0.35 -2.03 0.18 -1.37 0.25 -2.74 0.32 -4.12 l 0.07 0"/>
+          <path class="fig" d="m 57.73 183.61 c 0.53 1.89 1.12 3.73 1.89 5.5 0.38 0.89 0.78 1.75 1.2 2.65 0.19 0.46 0.38 1.03 0.14 1.58 -0.13 0.25 -0.33 0.46 -0.58 0.58 -0.24 0.12 -0.59 0.14 -0.82 -0.05 l 0.18 -0.04 c -0.16 0.31 -0.49 0.49 -0.81 0.52 -0.32 0.03 -0.68 -0.07 -0.9 -0.35 l 0.22 0 c -0.23 0.33 -0.6 0.54 -1 0.58 -0.39 0.05 -0.83 -0.06 -1.15 -0.36 l 0.33 0.01 c -0.18 0.19 -0.39 0.38 -0.63 0.53 -0.24 0.15 -0.54 0.26 -0.86 0.25 -0.35 -0.01 -0.67 -0.17 -0.89 -0.42 -0.11 -0.13 -0.21 -0.28 -0.26 -0.47 -0.05 -0.18 -0.04 -0.4 0.05 -0.59 l 0.63 0.3 c -0.27 0.57 -0.84 0.91 -1.4 1.01 -0.56 0.11 -1.18 0.02 -1.68 -0.3 -0.48 -0.31 -0.85 -0.76 -1.08 -1.25 -0.23 -0.49 -0.36 -1.01 -0.38 -1.54 -0.05 -1.07 0.29 -2.07 0.71 -2.95 0.41 -0.89 0.88 -1.72 1.12 -2.66 l 0.07 0.01 c -0.05 0.99 -0.42 1.93 -0.73 2.84 -0.31 0.91 -0.57 1.82 -0.44 2.7 0.09 0.87 0.49 1.74 1.16 2.18 0.32 0.21 0.72 0.3 1.11 0.24 0.39 -0.06 0.74 -0.26 0.91 -0.58 l 0.63 0.3 c -0.04 0.08 -0.03 0.21 0.07 0.34 0.1 0.13 0.27 0.23 0.42 0.24 0.37 0.03 0.79 -0.2 1.15 -0.51 l 0.19 -0.16 0.14 0.17 c 0.34 0.44 1.22 0.45 1.59 -0.06 l 0.12 -0.16 0.1 0.15 c 0.13 0.2 0.4 0.3 0.66 0.28 0.26 -0.02 0.52 -0.16 0.62 -0.39 l 0.06 -0.13 0.12 0.09 c 0.33 0.25 0.84 -0.09 0.96 -0.47 0.12 -0.39 -0.05 -0.84 -0.28 -1.23 -0.23 -0.4 -0.52 -0.83 -0.74 -1.27 -0.23 -0.44 -0.44 -0.89 -0.63 -1.34 -0.75 -1.83 -1.24 -3.78 -1.34 -5.75 l 0.07 -0.01"/>
+          <path class="fig" d="m 51.07 188.14 c 0.13 -0.86 0.21 -1.73 0.22 -2.6 0.02 -0.87 -0.07 -1.72 -0.14 -2.6 -0.03 -0.44 -0.06 -0.88 -0.05 -1.33 0 -0.45 0.08 -0.9 0.15 -1.33 0.15 -0.87 0.34 -1.73 0.55 -2.57 0.42 -1.7 0.86 -3.37 1.05 -5.09 0.21 -1.72 0.4 -3.45 0.48 -5.19 0.02 -0.43 0.05 -0.87 0.05 -1.28 -0.01 -0.42 -0.07 -0.84 -0.14 -1.26 -0.16 -0.84 -0.43 -1.66 -0.69 -2.5 -0.26 -0.83 -0.5 -1.69 -0.62 -2.57 -0.13 -0.87 -0.16 -1.76 -0.11 -2.64 0.09 -1.76 0.43 -3.48 0.8 -5.19 l 0.56 -2.56 c 0.19 -0.85 0.39 -1.7 0.5 -2.55 0.05 -0.43 0.08 -0.85 0.07 -1.28 -0.01 -0.42 -0.07 -0.85 -0.14 -1.27 -0.14 -0.84 -0.37 -1.68 -0.63 -2.5 -0.51 -1.65 -1.16 -3.3 -1.47 -5.06 -0.33 -1.74 -0.43 -3.53 -0.31 -5.3 0.06 -0.89 0.19 -1.77 0.37 -2.64 0.17 -0.84 0.28 -1.69 0.34 -2.54 0.12 -1.71 -0.02 -3.44 -0.17 -5.17 -0.15 -1.73 -0.34 -3.48 -0.41 -5.23 -0.17 -3.5 -0.09 -7 0.22 -10.48 l 0.07 0 c -0.1 3.49 -0.02 6.98 0.25 10.44 0.21 3.46 0.97 6.91 0.76 10.48 -0.05 0.89 -0.16 1.77 -0.34 2.65 -0.17 0.84 -0.29 1.69 -0.36 2.54 -0.14 1.71 -0.06 3.44 0.23 5.13 0.29 1.69 0.87 3.33 1.36 5.02 0.24 0.84 0.46 1.71 0.57 2.59 0.06 0.44 0.1 0.88 0.1 1.34 0 0.45 -0.05 0.89 -0.12 1.33 -0.14 0.88 -0.36 1.72 -0.58 2.57 -0.22 0.84 -0.41 1.69 -0.61 2.54 -0.39 1.7 -0.75 3.41 -0.8 5.14 -0.03 0.87 0.01 1.73 0.16 2.58 0.14 0.85 0.41 1.67 0.7 2.49 0.29 0.82 0.59 1.65 0.79 2.52 0.1 0.44 0.18 0.88 0.2 1.33 0.02 0.46 0.01 0.89 -0.01 1.33 -0.08 1.75 -0.21 3.5 -0.45 5.24 -0.22 1.75 -0.69 3.46 -1.14 5.14 -0.22 0.84 -0.44 1.68 -0.62 2.53 -0.09 0.43 -0.17 0.84 -0.19 1.26 -0.03 0.42 -0.02 0.86 0 1.29 0.12 1.74 0.04 3.53 -0.37 5.23 l -0.07 -0.01"/>
+          <path class="fig" d="m 78.15 99 c -0.17 -0.6 -0.31 -1.2 -0.45 -1.8 -0.14 -0.6 -0.26 -1.21 -0.39 -1.81 -0.11 -0.61 -0.23 -1.21 -0.33 -1.83 -0.1 -0.61 -0.2 -1.22 -0.26 -1.84 0.17 0.6 0.31 1.2 0.45 1.8 0.14 0.6 0.26 1.21 0.39 1.81 0.11 0.61 0.23 1.21 0.33 1.83 0.1 0.61 0.2 1.22 0.26 1.84"/>
+          <path class="fig" d="m 77.68 98.79 c -0.09 -0.2 -0.16 -0.41 -0.22 -0.62 -0.07 -0.21 -0.11 -0.42 -0.16 -0.64 -0.04 -0.21 -0.08 -0.43 -0.1 -0.65 -0.02 -0.22 -0.04 -0.44 -0.03 -0.66 0.09 0.2 0.16 0.41 0.22 0.62 0.07 0.21 0.11 0.42 0.16 0.63 0.04 0.21 0.08 0.43 0.1 0.64 0.02 0.22 0.04 0.44 0.03 0.66"/>
+          <path class="fig" d="m 64.7 56.84 c 0.36 -0.07 0.72 -0.12 1.11 0.03 0.09 0.04 0.19 0.12 0.24 0.23 0.05 0.11 0.05 0.25 0.01 0.35 -0.08 0.22 -0.29 0.34 -0.46 0.41 -0.35 0.12 -0.74 0.22 -1.13 0.07 -0.19 -0.07 -0.35 -0.24 -0.41 -0.42 -0.06 -0.18 -0.04 -0.42 0.12 -0.53 -0.11 0.15 -0.09 0.34 0 0.48 0.08 0.14 0.21 0.25 0.36 0.28 0.31 0.08 0.66 -0.01 0.97 -0.12 0.31 -0.09 0.5 -0.42 0.22 -0.58 -0.13 -0.08 -0.31 -0.12 -0.48 -0.14 -0.17 -0.04 -0.35 -0.05 -0.53 -0.06"/>
+          <path class="fig" d="m 65.16 57.37 c 0.04 -0.03 0.06 -0.1 0.02 -0.13 -0.04 -0.03 -0.09 -0.04 -0.14 -0.04 -0.09 0 -0.19 0.05 -0.25 0.09 -0.05 0.03 -0.04 0.1 0.07 0.12 0.1 0.03 0.21 0.02 0.3 -0.04 z m 0 0 c -0.09 0.06 -0.19 0.09 -0.31 0.1 -0.05 0 -0.12 0.01 -0.19 -0.06 -0.05 -0.06 -0.02 -0.18 0.04 -0.22 0.11 -0.07 0.23 -0.1 0.35 -0.06 0.05 0.02 0.11 0.05 0.14 0.1 0.04 0.05 0.01 0.12 -0.03 0.14"/>
+          <path class="fig" d="m 60.52 87.14 c -0.75 1.07 -1.52 2.09 -2.23 3.15 -0.72 1.06 -1.38 2.15 -2.09 3.25 0.35 -1.26 0.95 -2.44 1.67 -3.53 0.74 -1.08 1.6 -2.08 2.65 -2.87"/>
+          <path class="fig" d="m 54.12 137.03 c 0.69 0.23 1.39 -0.07 1.87 -0.5 0.49 -0.45 0.83 -1.07 1.17 -1.68 0.69 -1.23 1.25 -2.51 1.78 -3.85 -0.15 1.43 -0.65 2.82 -1.35 4.09 -0.36 0.62 -0.74 1.28 -1.36 1.74 -0.3 0.23 -0.67 0.39 -1.05 0.44 -0.38 0.04 -0.77 -0.02 -1.07 -0.24"/>
+          <path class="fig" d="m 58.88 134.53 c 0.35 0.58 0.79 1.02 1.34 1.3 0.55 0.28 1.17 0.38 1.84 0.32 -0.59 0.35 -1.38 0.34 -2.01 0.02 -0.63 -0.32 -1.11 -0.96 -1.17 -1.64"/>
+          <path class="fig" d="m 55.63 141.5 c 0.21 0.86 0.75 1.57 1.4 2.1 0.66 0.54 1.44 0.9 2.24 1.21 l 0.24 0.09 -0.11 0.24 c -0.62 1.36 -1.11 2.77 -1.49 4.22 l -0.17 0.65 -0.17 -0.63 c -0.22 -0.82 -0.35 -1.67 -0.36 -2.52 0.17 0.83 0.4 1.64 0.69 2.41 l -0.34 0.02 c 0.25 -1.5 0.72 -2.98 1.39 -4.35 l 0.13 0.33 c -0.83 -0.33 -1.64 -0.76 -2.3 -1.4 -0.33 -0.32 -0.61 -0.68 -0.81 -1.09 -0.2 -0.4 -0.34 -0.84 -0.35 -1.28"/>
+          <path class="fig" d="m 53.68 193.95 c 0.12 -0.24 0.21 -0.48 0.22 -0.73 0.01 -0.25 -0.06 -0.52 -0.15 -0.8 -0.09 -0.28 -0.19 -0.57 -0.22 -0.88 -0.03 -0.3 0.03 -0.63 0.22 -0.86 -0.15 0.26 -0.14 0.56 -0.07 0.83 0.07 0.27 0.21 0.52 0.35 0.78 0.14 0.26 0.28 0.55 0.33 0.89 0.05 0.34 -0.01 0.68 -0.1 0.99 l -0.59 -0.23"/>
+          <path class="fig" d="m 56.06 194.07 c 0.05 -0.27 0.09 -0.51 -0.01 -0.74 -0.1 -0.24 -0.3 -0.46 -0.38 -0.73 0.13 0.25 0.36 0.4 0.54 0.64 0.09 0.12 0.16 0.27 0.19 0.42 0.03 0.15 0.04 0.3 0.04 0.44 l -0.38 -0.03"/>
+          <path class="fig" d="m 58 193.94 c 0.06 -0.24 -0.02 -0.52 -0.13 -0.77 -0.11 -0.26 -0.27 -0.51 -0.34 -0.79 0.11 0.27 0.3 0.48 0.45 0.73 0.15 0.24 0.3 0.53 0.27 0.87 l -0.25 -0.04"/>
+          <path class="fig" d="m 59.57 193.81 c 0.02 -0.15 0.01 -0.31 -0.05 -0.46 -0.04 -0.15 -0.16 -0.28 -0.25 -0.41 -0.2 -0.26 -0.42 -0.52 -0.53 -0.83 0.13 0.31 0.36 0.55 0.58 0.8 0.1 0.13 0.23 0.25 0.29 0.42 0.07 0.16 0.1 0.33 0.08 0.51 l -0.13 -0.01"/>
+          <path class="fig" d="m 53.77 192.84 c -0.29 -0.05 -0.57 -0.07 -0.85 -0.05 -0.28 0.01 -0.56 0.05 -0.84 0.1 l -0.1 0.02 -0.04 -0.1 c -0.07 -0.18 -0.02 -0.37 0.09 -0.49 0.11 -0.13 0.26 -0.2 0.4 -0.22 0.29 -0.06 0.59 0.01 0.8 0.18 -0.26 -0.08 -0.52 -0.08 -0.75 0 -0.11 0.04 -0.21 0.1 -0.27 0.18 -0.06 0.08 -0.08 0.19 -0.04 0.26 l -0.14 -0.08 c 0.29 -0.06 0.59 -0.08 0.89 -0.05 0.3 0.03 0.59 0.1 0.85 0.25"/>
+          <path class="fig" d="m 52.23 126.66 c 1.46 -3.85 2.47 -7.86 3.29 -11.9 -0.7 4.07 -1.59 8.11 -2.94 12.03 l -0.35 -0.13"/>
+          <path class="fig" d="m 64.13 62.19 c -0.09 0.28 -0.21 0.57 -0.44 0.8 -0.11 0.12 -0.28 0.19 -0.43 0.23 -0.16 0.03 -0.25 0.06 -0.33 0.15 -0.17 0.17 -0.25 0.49 -0.48 0.73 -0.22 0.23 -0.53 0.37 -0.83 0.36 0.28 -0.09 0.52 -0.26 0.69 -0.48 0.17 -0.21 0.21 -0.51 0.45 -0.78 0.12 -0.13 0.33 -0.19 0.46 -0.2 0.14 -0.02 0.25 -0.07 0.36 -0.15 0.22 -0.16 0.39 -0.41 0.57 -0.65"/>
+          <path class="fig" d="m 53.33 166 c 0.61 -1.05 1.09 -2.19 1.4 -3.39 -0.19 1.22 -0.55 2.42 -1.07 3.56 l -0.33 -0.17"/>
+          <path class="fig" d="m 59.9 69.32 c -0.66 -0.07 -1.3 -0.33 -1.87 -0.66 -0.58 -0.33 -1.11 -0.75 -1.61 -1.17 l -1.48 -1.29 c -0.5 -0.42 -1.01 -0.81 -1.58 -1.16 0.63 0.2 1.21 0.55 1.75 0.93 0.55 0.38 1.04 0.81 1.55 1.23 0.5 0.43 1 0.84 1.52 1.21 0.53 0.37 1.1 0.68 1.72 0.91"/>
+          <path class="fig" d="m 73.44 74.48 c 0.52 0.5 0.97 1.03 1.35 1.64 0.18 0.31 0.34 0.65 0.41 1.01 0.08 0.36 0.05 0.75 -0.1 1.08 0.01 -0.72 -0.29 -1.31 -0.64 -1.9 -0.17 -0.3 -0.37 -0.58 -0.54 -0.89 -0.18 -0.3 -0.34 -0.62 -0.49 -0.95"/>
+          <path class="fig" d="m 78.31 101.92 c -0.09 0 -0.16 0 -0.22 -0.01 -0.07 0 -0.13 -0.02 -0.19 -0.03 -0.06 -0.01 -0.12 -0.02 -0.19 -0.05 -0.06 -0.02 -0.13 -0.04 -0.21 -0.08 0.06 -0.06 0.13 -0.1 0.21 -0.12 0.08 -0.02 0.16 -0.02 0.23 -0.01 0.08 0.02 0.15 0.04 0.22 0.09 0.06 0.05 0.12 0.11 0.15 0.19"/>
+          <path class="fig" d="m 69.55 48.9 c 0.2 1.13 0.34 2.27 0.32 3.43 -0.01 1.16 -0.21 2.33 -0.68 3.42 -0.47 1.08 -1.22 2.04 -2.16 2.75 -0.47 0.35 -0.98 0.65 -1.51 0.88 -0.54 0.21 -1.1 0.37 -1.67 0.43 1.11 -0.3 2.12 -0.85 2.97 -1.58 0.84 -0.74 1.53 -1.64 1.96 -2.66 0.45 -1.02 0.65 -2.13 0.75 -3.26 0.05 -0.56 0.06 -1.13 0.05 -1.7 0.01 -0.57 -0.02 -1.14 -0.03 -1.72"/>
+          <path class="fig" d="m 70.43 72.49 c 0.63 0.33 1.24 0.6 1.88 0.8 0.64 0.2 1.31 0.31 2.01 0.39 -0.68 0.19 -1.42 0.14 -2.11 -0.07 -0.68 -0.21 -1.32 -0.58 -1.78 -1.12"/>
+          <path class="fig" d="m 63.56 65.62 c -0.03 0.36 -0.25 0.7 -0.54 0.93 -0.29 0.23 -0.67 0.36 -1.03 0.31 0.34 -0.13 0.63 -0.29 0.89 -0.49 0.26 -0.2 0.48 -0.45 0.68 -0.75"/>
+          <path class="fig" d="m 31.82 62.53 c 0.32 0.51 0.83 0.92 1.44 1.14 -0.63 -0.11 -1.25 -0.43 -1.71 -0.93 l 0.27 -0.21"/>
+          <path class="fig" d="m 68.19 63.4 c -0.43 0.53 -1.08 0.84 -1.71 0.86 0.62 -0.13 1.15 -0.54 1.43 -1.05 l 0.28 0.19"/>
+          <path class="fig" d="m 48.65 78.16 c -0.57 0.15 -1.17 0.19 -1.76 0.16 -0.59 -0.04 -1.18 -0.13 -1.74 -0.35 0.59 0.04 1.17 0.09 1.75 0.12 0.58 0.03 1.16 0.04 1.75 0.06"/>
+          <path class="fig" d="m 51.06 78.09 c 0.71 0.05 1.4 0.09 2.1 0.06 0.7 -0.02 1.39 -0.1 2.09 -0.19 -0.66 0.27 -1.37 0.39 -2.08 0.42 -0.71 0.02 -1.43 -0.06 -2.1 -0.29"/>
+          <path class="fig" d="m 39.17 9.87 c 0.05 0.22 0.12 0.39 0.21 0.55 0.09 0.16 0.2 0.3 0.37 0.46 -0.23 0.02 -0.45 -0.14 -0.57 -0.34 -0.11 -0.2 -0.14 -0.47 -0.01 -0.66"/>
+          <path class="fig" d="m 39.29 11.74 c 0.25 0.15 0.47 0.29 0.71 0.4 0.24 0.12 0.48 0.21 0.75 0.32 -0.28 0.07 -0.59 0.01 -0.85 -0.11 -0.26 -0.13 -0.49 -0.34 -0.6 -0.61"/>
+          <path class="fig" d="m 40.84 11.42 c 0.2 0.05 0.35 0.11 0.51 0.17 0.16 0.06 0.31 0.12 0.49 0.21 -0.18 0.09 -0.39 0.07 -0.57 0.01 -0.18 -0.07 -0.35 -0.2 -0.43 -0.38"/>
+          <path class="fig" d="m 40.93 13.73 c 0.19 0.18 0.39 0.26 0.61 0.32 0.22 0.06 0.46 0.07 0.72 0.15 -0.24 0.1 -0.51 0.13 -0.77 0.07 -0.26 -0.06 -0.53 -0.27 -0.55 -0.54"/>
+          <path class="fig" d="m 43.05 15.13 c 0.22 -0.08 0.43 -0.09 0.63 -0.13 0.2 -0.04 0.37 -0.09 0.58 -0.21 -0.06 0.24 -0.3 0.39 -0.53 0.43 -0.23 0.04 -0.46 0.01 -0.67 -0.09"/>
+          <path class="fig" d="m 43.09 13.2 0.89 0.35 c -0.16 0.11 -0.36 0.1 -0.53 0.04 -0.17 -0.07 -0.32 -0.2 -0.36 -0.39"/>
+          <path class="fig" d="m 45.56 13.28 c 0.21 0.06 0.38 0.12 0.57 0.18 0.18 0.06 0.36 0.1 0.57 0.17 -0.19 0.11 -0.43 0.11 -0.63 0.05 -0.2 -0.07 -0.4 -0.19 -0.5 -0.39"/>
+          <path class="fig" d="m 40.7 8.84 c 0.1 0.16 0.16 0.29 0.24 0.42 0.07 0.13 0.15 0.26 0.23 0.43 -0.19 -0.03 -0.34 -0.16 -0.43 -0.32 -0.08 -0.16 -0.12 -0.36 -0.04 -0.53"/>
+          <path class="fig" d="m 49.83 13.75 c 0.32 0.14 0.62 0.23 0.93 0.26 0.31 0.04 0.63 0.03 0.97 -0.03 -0.27 0.22 -0.65 0.3 -0.99 0.26 -0.35 -0.05 -0.69 -0.21 -0.9 -0.49"/>
+        </g>
+        <g id="figBack" style="display:none">
+          <path class="fig" d="m 40.3 107.89 c 0.87 -0.13 1.75 -0.23 2.6 -0.4 0.86 -0.15 1.71 -0.36 2.51 -0.68 0.79 -0.32 1.56 -0.73 2.21 -1.28 0.65 -0.54 1.19 -1.22 1.51 -1.99 0.68 -1.55 0.48 -3.37 0.56 -5.11 l 0.08 -2.64 c 0.04 -0.88 0.07 -1.76 0.13 -2.64 0.05 0.88 0.08 1.76 0.11 2.64 l 0.06 2.64 c 0.02 0.88 0.03 1.75 0.01 2.64 -0.03 0.89 -0.13 1.81 -0.5 2.66 -0.37 0.85 -0.98 1.57 -1.68 2.14 -0.71 0.57 -1.51 1.01 -2.36 1.29 -0.85 0.29 -1.73 0.46 -2.6 0.56 -0.88 0.09 -1.76 0.14 -2.64 0.15"/>
+          <path class="fig" d="m 50.06 101.49 c 0.12 0.99 0.3 1.97 0.73 2.85 0.42 0.88 1.17 1.57 2.05 2.03 0.88 0.46 1.86 0.71 2.85 0.88 0.5 0.09 1 0.14 1.5 0.19 l 1.51 0.15 -1.51 -0.09 c -0.5 -0.02 -1.01 -0.05 -1.51 -0.12 -1 -0.13 -2.01 -0.35 -2.95 -0.78 -0.93 -0.43 -1.77 -1.14 -2.27 -2.08 -0.51 -0.92 -0.73 -1.95 -0.9 -2.95 l 0.5 -0.07"/>
+          <path class="fig" d="m 41.37 185.16 c -0.19 0.72 -0.5 1.43 -0.93 2.05 -0.42 0.63 -0.94 1.2 -1.54 1.67 -0.6 0.47 -1.28 0.85 -2 1.1 -0.36 0.12 -0.68 0.21 -0.82 0.46 -0.15 0.25 -0.13 0.63 -0.1 0.99 l -0.09 -0.11 c 0.18 0.09 0.4 0.11 0.6 0.05 l 0.15 -0.04 -0.01 0.15 c -0.01 0.36 0.26 0.68 0.6 0.85 0.34 0.18 0.73 0.24 1.12 0.2 0.39 -0.02 0.79 -0.09 1.19 -0.1 0.41 -0.03 0.84 0.09 1.21 0.22 0.77 0.27 1.46 0.64 2.22 0.78 0.76 0.17 1.54 0.27 2.32 0.3 0.78 0.02 1.56 -0.01 2.33 -0.13 0.39 -0.05 0.75 -0.12 1.01 -0.31 0.26 -0.18 0.44 -0.49 0.51 -0.85 0.08 -0.35 0.07 -0.73 0.01 -1.11 -0.06 -0.4 -0.1 -0.8 -0.14 -1.19 -0.08 -0.8 -0.14 -1.59 -0.24 -2.38 l 0.05 -0.01 c 0.21 0.77 0.35 1.56 0.49 2.35 l 0.23 1.17 c 0.08 0.4 0.12 0.83 0.05 1.26 -0.07 0.42 -0.26 0.89 -0.66 1.17 -0.39 0.29 -0.84 0.37 -1.23 0.43 -0.8 0.12 -1.62 0.16 -2.43 0.11 -0.81 -0.05 -1.62 -0.18 -2.4 -0.39 -0.39 -0.1 -0.79 -0.25 -1.15 -0.42 -0.37 -0.17 -0.71 -0.36 -1.07 -0.52 -0.36 -0.16 -0.72 -0.28 -1.11 -0.28 -0.39 -0.01 -0.78 0.05 -1.19 0.07 -0.4 0.02 -0.83 -0.03 -1.2 -0.22 -0.18 -0.1 -0.36 -0.22 -0.5 -0.38 -0.14 -0.17 -0.23 -0.38 -0.25 -0.6 l 0.15 0.11 c -0.25 0.09 -0.53 0.09 -0.78 -0.01 l -0.07 -0.03 -0.01 -0.09 c -0.06 -0.37 -0.14 -0.78 0.05 -1.2 0.09 -0.21 0.28 -0.38 0.46 -0.48 0.19 -0.1 0.37 -0.16 0.54 -0.23 0.67 -0.26 1.32 -0.59 1.89 -1.02 1.17 -0.85 2.1 -2.03 2.68 -3.39 l 0.05 0.02"/>
+          <path class="fig" d="m 58.64 185.14 c 0.58 1.37 1.51 2.54 2.68 3.39 0.58 0.43 1.22 0.77 1.89 1.02 0.17 0.07 0.35 0.12 0.54 0.23 0.19 0.1 0.37 0.27 0.47 0.48 0.19 0.42 0.11 0.83 0.05 1.2 l -0.01 0.09 -0.07 0.03 c -0.25 0.09 -0.53 0.09 -0.78 0.01 l 0.15 -0.11 c -0.03 0.47 -0.39 0.81 -0.76 0.99 -0.37 0.19 -0.81 0.23 -1.2 0.23 -0.4 0.01 -0.8 -0.02 -1.19 0.03 -0.39 0.04 -0.75 0.18 -1.12 0.33 -0.72 0.31 -1.44 0.7 -2.22 0.94 -0.77 0.25 -1.57 0.42 -2.39 0.51 -0.82 0.07 -1.67 0.07 -2.48 -0.22 -0.41 -0.13 -0.79 -0.35 -1.12 -0.64 -0.34 -0.27 -0.59 -0.7 -0.69 -1.12 -0.21 -0.85 -0.09 -1.69 0.09 -2.47 0.17 -0.79 0.44 -1.55 0.66 -2.32 l 0.05 0.01 c -0.11 0.8 -0.3 1.58 -0.41 2.36 -0.1 0.78 -0.17 1.58 0.04 2.29 0.11 0.35 0.3 0.64 0.59 0.86 0.28 0.23 0.6 0.41 0.96 0.52 0.71 0.24 1.49 0.26 2.27 0.22 0.78 -0.05 1.55 -0.21 2.31 -0.41 0.76 -0.2 1.48 -0.53 2.25 -0.79 0.38 -0.13 0.78 -0.25 1.2 -0.27 0.41 -0.03 0.81 0 1.21 0 0.4 0.01 0.79 -0.03 1.13 -0.21 0.34 -0.17 0.61 -0.49 0.6 -0.85 l 0 -0.15 0.15 0.04 c 0.2 0.05 0.42 0.03 0.6 -0.05 l -0.09 0.11 c 0.03 -0.36 0.05 -0.73 -0.1 -0.99 -0.14 -0.25 -0.46 -0.34 -0.82 -0.46 -0.72 -0.25 -1.4 -0.63 -2 -1.1 -0.6 -0.47 -1.13 -1.04 -1.54 -1.67 -0.43 -0.62 -0.74 -1.33 -0.93 -2.05 l 0.05 -0.02"/>
+          <path class="fig" d="m 43.77 27.77 c -0.42 -0.51 -0.68 -1.13 -0.86 -1.75 -0.18 -0.63 -0.28 -1.28 -0.37 -1.92 l -0.54 -3.85 c -0.17 -1.29 -0.31 -2.58 -0.41 -3.87 -0.1 -1.29 -0.19 -2.61 0.04 -3.93 0.22 -1.31 0.86 -2.61 1.96 -3.46 0.27 -0.21 0.57 -0.39 0.9 -0.52 0.32 -0.13 0.64 -0.22 0.92 -0.33 0.29 -0.11 0.51 -0.25 0.78 -0.44 l 0.8 -0.56 1.6 -1.11 c 0.54 -0.37 1.18 -0.71 1.86 -0.85 1.36 -0.3 2.84 0 3.97 0.85 l -0.49 0.04 c 0.94 -1.01 2.47 -1.37 3.77 -0.85 1.29 0.53 2.17 1.85 2.15 3.27 l -0.73 -0.37 c 0.35 -0.28 0.81 -0.33 1.18 -0.25 0.38 0.08 0.72 0.28 0.97 0.57 0.48 0.57 0.59 1.26 0.66 1.84 0.06 0.6 0.05 1.28 -0.27 1.92 -0.16 0.32 -0.4 0.6 -0.7 0.82 -0.3 0.21 -0.69 0.35 -1.09 0.33 l 0.41 -0.72 c 0.29 0.44 0.27 1.04 0.08 1.44 -0.18 0.42 -0.48 0.73 -0.81 0.98 -0.17 0.12 -0.36 0.23 -0.55 0.31 -0.18 0.07 -0.26 0.12 -0.26 0.12 -0.01 0 -0.04 0.1 -0.04 0.25 l 0.02 0.51 c 0.04 1.39 0.16 2.85 -0.19 4.3 -0.19 0.71 -0.45 1.35 -0.57 2.01 -0.11 0.65 -0.16 1.38 -0.24 2.07 -0.09 0.7 -0.21 1.41 -0.45 2.09 -0.11 0.34 -0.27 0.67 -0.45 0.98 -0.19 0.31 -0.42 0.58 -0.68 0.83 l -0.06 -0.06 c 0.46 -0.52 0.75 -1.16 0.92 -1.83 0.17 -0.67 0.23 -1.36 0.28 -2.05 0.05 -0.7 0.05 -1.39 0.13 -2.13 0.1 -0.73 0.33 -1.41 0.47 -2.07 0.26 -1.31 0.13 -2.7 0.03 -4.1 l -0.03 -0.54 c 0 -0.19 -0.01 -0.47 0.18 -0.76 0.21 -0.29 0.48 -0.37 0.62 -0.44 0.13 -0.06 0.24 -0.13 0.36 -0.22 0.22 -0.18 0.41 -0.41 0.51 -0.63 0.1 -0.24 0.08 -0.42 -0.01 -0.58 l -0.48 -0.78 0.89 0.07 c 0.33 0.02 0.72 -0.26 0.9 -0.64 0.19 -0.39 0.21 -0.89 0.17 -1.41 -0.04 -0.53 -0.15 -1.02 -0.42 -1.33 -0.22 -0.29 -0.72 -0.39 -0.9 -0.22 l -0.78 0.71 0.06 -1.08 c 0.05 -1.02 -0.61 -2.08 -1.57 -2.49 -0.95 -0.41 -2.2 -0.16 -2.92 0.6 l -0.23 0.25 -0.26 -0.21 c -0.93 -0.73 -2.21 -1.02 -3.38 -0.78 -0.59 0.12 -1.13 0.38 -1.66 0.73 l -1.61 1.07 -0.81 0.54 c -0.26 0.18 -0.59 0.38 -0.92 0.49 -0.32 0.11 -0.63 0.19 -0.91 0.31 -0.28 0.11 -0.54 0.26 -0.78 0.44 -0.49 0.36 -0.89 0.84 -1.2 1.38 -0.31 0.53 -0.5 1.13 -0.63 1.75 -0.25 1.24 -0.19 2.53 -0.12 3.82 0.07 1.29 0.17 2.58 0.31 3.86 l 0.45 3.86 c 0.08 0.64 0.16 1.28 0.32 1.9 0.16 0.62 0.4 1.23 0.8 1.73 l -0.07 0.06"/>
+          <path class="fig" d="m 42.56 23.94 c -0.08 -0.37 -0.13 -0.74 -0.16 -1.11 -0.11 -1.23 -0.25 -2.42 -0.38 -3.64 -0.1 -0.99 -0.19 -1.98 -0.25 -2.98 -0.11 -1.65 -0.17 -3.37 0.43 -4.91 0.45 -1.13 1.32 -2.17 2.48 -2.61 0.63 -0.24 0.99 -0.27 1.53 -0.64 0.69 -0.48 1.39 -0.95 2.09 -1.43 0.46 -0.31 0.92 -0.63 1.42 -0.85 1.45 -0.63 3.23 -0.41 4.48 0.56 0.83 -0.89 2.22 -1.19 3.35 -0.73 1.12 0.46 1.9 1.66 1.86 2.88 0.44 -0.34 1.12 -0.18 1.49 0.23 0.37 0.41 0.5 0.98 0.56 1.54 0.06 0.58 0.06 1.19 -0.19 1.72 -0.25 0.53 -0.78 0.96 -1.36 0.93 0.48 0.74 -0.24 1.73 -1.06 2.08 -0.15 0.07 -0.32 0.13 -0.43 0.26 -0.14 0.17 -0.13 0.4 -0.13 0.62 0 1.36 0.34 2.7 0.06 4.06 -0.28 1.34 -0.68 2.67 -1.05 3.99 -0.27 0.97 -0.57 1.97 -1.25 2.72 -0.66 0.73 -1.59 1.11 -2.44 1.58 -0.85 0.47 -1.75 1.11 -2.47 1.74 0.05 0.12 -0.03 0.27 -0.15 0.33 -0.12 0.06 -0.26 0.05 -0.39 0.05 0.07 0.08 0.14 0.15 0.2 0.23 0.02 0.03 0.05 0.06 0.04 0.09 -0.01 0.03 -0.05 0.05 -0.08 0.06 -0.2 0.06 -0.41 0.07 -0.61 0.02 0.14 -0.09 0.29 -0.17 0.43 -0.26 -0.26 -0.06 -0.52 -0.12 -0.77 -0.18 0.28 -0.06 0.55 -0.12 0.83 -0.18 -0.29 -0.02 -0.58 -0.03 -0.87 -0.05 -0.05 0 -0.1 -0.01 -0.14 -0.04 -0.04 -0.03 -0.05 -0.1 -0.01 -0.13 -0.67 -0.12 -1.03 -0.56 -1.5 -1 -0.45 -0.41 -0.99 -0.71 -1.54 -0.98 -1.05 -0.52 -2.21 -0.94 -3.01 -1.83 -0.54 -0.6 -0.83 -1.34 -1 -2.12"/>
+          <path class="fig" d="m 56.74 24.52 -0.19 1.66 -0.17 1.66 -0.15 1.66 -0.14 1.66 c -0.05 -0.56 -0.06 -1.12 -0.05 -1.67 0.01 -0.56 0.04 -1.12 0.1 -1.67 0.06 -0.56 0.13 -1.11 0.23 -1.66 0.1 -0.55 0.22 -1.1 0.38 -1.63"/>
+          <path class="fig" d="m 58.11 20.07 c 0.06 -0.38 0.27 -0.79 0.71 -0.98 0.44 -0.19 0.97 0 1.25 0.33 0.29 0.35 0.34 0.78 0.36 1.17 0.02 0.39 0.02 0.77 0 1.17 -0.04 0.79 -0.36 1.57 -0.86 2.19 -0.27 0.31 -0.56 0.57 -0.91 0.78 -0.35 0.21 -0.84 0.3 -1.19 0.1 l 0.01 -0.05 c 0.39 0.01 0.69 -0.15 0.95 -0.38 0.26 -0.23 0.52 -0.51 0.74 -0.78 0.46 -0.55 0.79 -1.2 1.01 -1.91 0.1 -0.35 0.15 -0.74 0.09 -1.1 -0.06 -0.36 -0.25 -0.7 -0.5 -0.9 -0.24 -0.21 -0.54 -0.34 -0.83 -0.26 -0.29 0.07 -0.57 0.33 -0.79 0.64 l -0.05 -0.02"/>
+          <path class="fig" d="m 42.1 20.09 c -0.22 -0.31 -0.49 -0.57 -0.79 -0.64 -0.29 -0.08 -0.59 0.05 -0.83 0.26 -0.24 0.2 -0.43 0.53 -0.5 0.9 -0.06 0.37 -0.02 0.75 0.09 1.1 0.22 0.71 0.55 1.36 1.01 1.91 0.22 0.27 0.48 0.55 0.74 0.78 0.26 0.23 0.57 0.4 0.95 0.38 l 0.01 0.05 c -0.36 0.19 -0.85 0.11 -1.19 -0.1 -0.36 -0.21 -0.65 -0.47 -0.91 -0.78 -0.5 -0.63 -0.82 -1.4 -0.86 -2.19 -0.02 -0.39 -0.02 -0.78 0 -1.17 0.02 -0.38 0.07 -0.81 0.36 -1.17 0.28 -0.33 0.8 -0.53 1.25 -0.33 0.43 0.19 0.65 0.6 0.71 0.98 l -0.05 0.02"/>
+          <path class="fig" d="m 56.23 31.34 c 0.29 0.95 1 1.7 1.78 2.28 0.79 0.59 1.69 1.01 2.56 1.48 0.44 0.24 0.87 0.49 1.28 0.77 0.2 0.15 0.4 0.3 0.59 0.47 0.19 0.17 0.36 0.35 0.54 0.51 0.18 0.16 0.37 0.27 0.59 0.28 0.22 0.02 0.48 0 0.73 0.01 0.5 -0.01 0.99 -0.01 1.49 0 1 0.03 2 0.12 2.98 0.41 0.97 0.28 1.88 0.76 2.7 1.35 1.64 1.19 2.86 2.9 3.59 4.78 0.75 1.88 1.02 3.91 1.03 5.9 0.01 1 -0.03 1.99 -0.07 2.99 l -0.07 1.48 c -0.01 0.48 0.01 0.97 0.06 1.45 0.2 1.93 0.85 3.83 1.17 5.81 0.34 1.97 0.52 3.97 0.52 5.97 0.01 0.99 0.07 1.97 0.11 2.95 l 0.06 1.47 c 0.03 0.48 0.11 0.95 0.2 1.43 0.38 1.9 1.16 3.75 1.54 5.74 0.39 1.97 0.54 3.97 0.64 5.96 0.09 1.99 0.09 3.98 0.05 5.96 -0.03 1.97 0.02 3.94 0.55 5.79 0.27 0.92 0.67 1.8 1.21 2.58 0.53 0.78 1.28 1.45 1.89 2.28 0.31 0.41 0.58 0.88 0.78 1.34 0.2 0.47 0.37 0.93 0.59 1.34 0.44 0.83 1.08 1.52 1.9 2.05 0.21 0.15 0.43 0.31 0.62 0.55 0.2 0.23 0.32 0.55 0.32 0.88 0 0.16 -0.03 0.34 -0.12 0.5 -0.08 0.16 -0.23 0.31 -0.39 0.39 -0.32 0.16 -0.58 0.16 -0.85 0.18 -1.09 0.04 -2.17 -0.43 -2.87 -1.26 l 0.51 -0.25 c 0.33 1.45 0.66 2.91 0.9 4.4 0.12 0.74 0.22 1.49 0.28 2.24 0.03 0.38 0.05 0.75 0.07 1.13 0.01 0.19 0.01 0.38 0.01 0.57 0 0.19 0.01 0.38 -0.03 0.61 -0.04 0.22 -0.17 0.51 -0.44 0.64 -0.26 0.13 -0.54 0.11 -0.76 0.02 -0.5 -0.19 -0.7 -0.67 -0.81 -1.03 -0.21 -0.74 -0.36 -1.47 -0.51 -2.2 l -0.44 -2.19 c -0.08 -0.36 -0.16 -0.72 -0.24 -1.08 -0.09 -0.35 -0.19 -0.72 -0.33 -0.98 l 0.47 -0.15 0.27 4.58 0.13 2.29 0.03 0.57 c 0.01 0.2 0.01 0.41 -0.02 0.62 -0.03 0.21 -0.08 0.43 -0.21 0.64 -0.12 0.21 -0.37 0.39 -0.64 0.41 -0.55 0.04 -0.95 -0.39 -1.1 -0.79 -0.15 -0.41 -0.18 -0.79 -0.24 -1.18 -0.1 -0.77 -0.14 -1.54 -0.19 -2.3 -0.09 -1.52 -0.21 -3.04 -0.78 -4.42 l 0.41 -0.02 c -0.12 0.6 -0.11 1.33 -0.12 2 0 0.69 0.01 1.37 0.03 2.06 l 0.08 2.07 c 0.01 0.34 0.06 0.69 -0.01 1.08 -0.04 0.19 -0.11 0.4 -0.27 0.56 -0.15 0.17 -0.39 0.26 -0.61 0.25 -0.45 -0.02 -0.81 -0.32 -0.97 -0.69 -0.17 -0.36 -0.18 -0.74 -0.19 -1.09 -0.02 -0.69 -0.04 -1.38 -0.08 -2.06 -0.07 -1.37 -0.19 -2.75 -0.35 -4.11 l 0.18 0.16 c -0.1 -0.04 -0.23 0.26 -0.21 0.52 l 0.01 0.9 0.01 1.8 0.01 0.9 c -0.01 0.3 0.03 0.59 -0.05 0.94 -0.04 0.17 -0.14 0.35 -0.28 0.47 -0.14 0.12 -0.36 0.2 -0.57 0.15 -0.21 -0.05 -0.35 -0.22 -0.43 -0.38 -0.08 -0.16 -0.12 -0.32 -0.16 -0.47 l -1.05 -7.12 c -0.19 -1.19 -0.23 -2.41 -0.17 -3.61 0.05 -1.2 0.2 -2.4 0.19 -3.58 -0.02 -1.19 -0.2 -2.37 -0.49 -3.52 -0.28 -1.16 -0.7 -2.28 -1.06 -3.42 -0.74 -2.28 -1.46 -4.56 -2.15 -6.86 -0.34 -1.15 -0.68 -2.3 -0.97 -3.46 -0.15 -0.58 -0.28 -1.17 -0.34 -1.77 -0.06 -0.6 -0.06 -1.21 -0.04 -1.8 0.02 -1.2 0.18 -2.39 0.09 -3.58 -0.1 -1.19 -0.48 -2.33 -0.88 -3.46 -0.4 -1.13 -0.85 -2.24 -1.24 -3.37 -0.39 -1.13 -0.75 -2.29 -0.84 -3.49 l 0.07 0 c 0.1 1.19 0.46 2.34 0.86 3.47 0.4 1.13 0.85 2.24 1.26 3.36 0.4 1.13 0.8 2.28 0.9 3.48 0.1 1.21 -0.06 2.4 -0.07 3.6 -0.01 0.6 -0.01 1.19 0.05 1.78 0.06 0.59 0.19 1.17 0.35 1.75 0.3 1.16 0.64 2.3 0.99 3.45 0.7 2.29 1.44 4.57 2.18 6.84 0.37 1.14 0.79 2.26 1.08 3.43 0.3 1.17 0.49 2.37 0.52 3.58 0.01 1.22 -0.14 2.4 -0.18 3.59 -0.05 1.19 -0.01 2.38 0.18 3.55 l 1.08 7.09 c 0.05 0.27 0.17 0.55 0.34 0.58 0.17 0.05 0.39 -0.13 0.43 -0.37 0.06 -0.24 0.03 -0.55 0.03 -0.85 l -0.01 -0.9 -0.02 -1.8 -0.01 -0.9 c 0 -0.17 0.02 -0.34 0.09 -0.51 0.03 -0.09 0.08 -0.18 0.17 -0.25 0.08 -0.08 0.22 -0.13 0.33 -0.12 l 0.16 0.01 0.02 0.15 c 0.17 1.37 0.29 2.75 0.37 4.14 0.04 0.69 0.07 1.38 0.09 2.07 0.01 0.34 0.03 0.67 0.16 0.93 0.11 0.26 0.38 0.45 0.62 0.46 0.25 0.01 0.43 -0.19 0.47 -0.49 0.06 -0.3 0.02 -0.64 0 -0.98 -0.04 -0.69 -0.07 -1.38 -0.09 -2.07 -0.02 -0.69 -0.04 -1.38 -0.04 -2.08 0 -0.35 0 -0.69 0.02 -1.04 0.02 -0.35 0.03 -0.69 0.12 -1.08 l 0.15 -0.64 0.26 0.61 c 0.61 1.46 0.74 3.04 0.83 4.56 0.05 0.76 0.1 1.52 0.2 2.27 0.06 0.37 0.1 0.76 0.21 1.07 0.06 0.15 0.14 0.28 0.25 0.37 0.11 0.09 0.25 0.14 0.36 0.12 0.24 -0.02 0.39 -0.29 0.43 -0.64 0.02 -0.17 0.02 -0.35 0.01 -0.53 l -0.04 -0.57 -0.14 -2.29 -0.29 -4.58 -0.07 -1.13 0.54 0.98 c 0.22 0.4 0.3 0.75 0.4 1.12 0.09 0.37 0.18 0.73 0.25 1.1 l 0.45 2.19 c 0.15 0.72 0.31 1.46 0.51 2.15 0.1 0.33 0.26 0.61 0.49 0.69 0.12 0.05 0.25 0.04 0.32 0 0.07 -0.04 0.13 -0.12 0.15 -0.26 0.03 -0.14 0.02 -0.32 0.02 -0.5 0 -0.18 0 -0.37 -0.01 -0.55 -0.01 -0.37 -0.04 -0.73 -0.07 -1.1 -0.06 -0.73 -0.16 -1.47 -0.29 -2.2 -0.24 -1.46 -0.58 -2.91 -0.92 -4.36 l -0.27 -1.18 0.79 0.93 c 0.58 0.68 1.5 1.08 2.4 1.04 0.22 -0.01 0.47 -0.04 0.59 -0.11 0.12 -0.06 0.18 -0.18 0.18 -0.35 0.01 -0.36 -0.28 -0.64 -0.69 -0.91 -0.86 -0.54 -1.62 -1.33 -2.11 -2.26 -0.24 -0.46 -0.42 -0.94 -0.62 -1.38 -0.19 -0.44 -0.42 -0.83 -0.72 -1.21 -0.57 -0.76 -1.32 -1.43 -1.92 -2.29 -0.59 -0.84 -1.03 -1.79 -1.32 -2.77 -0.57 -1.97 -0.61 -4.01 -0.58 -6 0.04 -1.98 0.04 -3.95 -0.05 -5.92 -0.09 -1.97 -0.25 -3.94 -0.63 -5.85 -0.36 -1.91 -1.14 -3.75 -1.54 -5.74 -0.1 -0.5 -0.18 -1 -0.21 -1.51 l -0.05 -1.5 c -0.03 -1 -0.07 -2 -0.08 -2.99 0.01 -1.96 -0.14 -3.93 -0.46 -5.87 -0.29 -1.94 -0.93 -3.83 -1.12 -5.85 -0.05 -0.5 -0.07 -1.01 -0.05 -1.52 l 0.08 -1.49 c 0.06 -0.99 0.1 -1.97 0.1 -2.96 0.01 -1.96 -0.24 -3.93 -0.95 -5.75 -0.69 -1.82 -1.85 -3.47 -3.41 -4.64 -0.78 -0.58 -1.65 -1.05 -2.58 -1.32 -0.93 -0.28 -1.91 -0.39 -2.89 -0.44 -0.49 -0.02 -0.99 -0.03 -1.48 -0.03 -0.25 -0.01 -0.49 0.01 -0.76 -0.02 -0.27 -0.03 -0.53 -0.18 -0.72 -0.36 -0.68 -0.74 -1.47 -1.29 -2.34 -1.77 -0.86 -0.49 -1.76 -0.92 -2.55 -1.54 -0.79 -0.6 -1.49 -1.39 -1.77 -2.36 l 0.07 -0.02"/>
+          <path class="fig" d="m 70.06 51.03 c -0.45 1.37 -0.64 2.8 -0.72 4.24 -0.09 1.44 -0.09 2.88 -0.23 4.33 -0.13 1.44 -0.43 2.91 -1.02 4.25 -0.58 1.35 -1.34 2.59 -2.09 3.83 -0.74 1.23 -1.45 2.48 -1.93 3.8 -0.48 1.32 -0.7 2.74 -0.74 4.15 -0.03 1.42 0.1 2.84 0.31 4.26 l 0.72 4.27 0.69 4.27 c 0.23 1.43 0.45 2.86 0.64 4.29 0.37 2.87 0.67 5.74 0.94 8.61 0.25 2.88 0.48 5.75 0.7 8.63 0.2 2.88 0.48 5.75 0.52 8.65 0.02 1.45 -0.02 2.9 -0.16 4.35 -0.14 1.44 -0.39 2.89 -0.74 4.3 -0.69 2.82 -1.63 5.56 -2.31 8.34 -0.33 1.39 -0.6 2.8 -0.72 4.22 -0.13 1.41 -0.09 2.84 -0.06 4.29 0.08 2.88 0.24 5.76 0.25 8.66 0 2.9 -0.15 5.83 -0.78 8.68 -0.62 2.85 -1.56 5.59 -2.43 8.34 -0.43 1.37 -0.86 2.75 -1.21 4.14 -0.18 0.7 -0.34 1.4 -0.47 2.1 -0.13 0.7 -0.24 1.42 -0.37 2.13 -0.24 1.42 -0.5 2.84 -0.59 4.27 -0.02 0.72 -0.01 1.44 -0.02 2.16 l 0 0.54 c 0.01 0.18 0.02 0.36 0.01 0.54 -0.01 0.36 -0.07 0.74 -0.28 1.05 l -0.06 -0.04 c 0.19 -0.3 0.24 -0.66 0.23 -1.02 0 -0.18 -0.02 -0.36 -0.03 -0.54 l -0.02 -0.54 c -0.02 -0.72 -0.05 -1.45 -0.05 -2.17 0.04 -1.45 0.25 -2.89 0.46 -4.32 0.11 -0.71 0.2 -1.43 0.32 -2.15 0.12 -0.72 0.26 -1.43 0.43 -2.14 0.32 -1.41 0.72 -2.81 1.13 -4.19 0.83 -2.77 1.73 -5.51 2.29 -8.31 0.57 -2.8 0.74 -5.67 0.72 -8.54 -0.01 -2.87 -0.21 -5.75 -0.26 -8.65 -0.02 -1.44 -0.05 -2.9 0.1 -4.37 0.14 -1.46 0.42 -2.89 0.77 -4.3 0.7 -2.83 1.69 -5.54 2.42 -8.32 0.38 -1.39 0.64 -2.79 0.81 -4.21 0.16 -1.42 0.22 -2.86 0.23 -4.3 0 -2.88 -0.19 -5.76 -0.39 -8.64 -0.19 -2.88 -0.4 -5.76 -0.7 -8.63 -0.28 -2.87 -0.63 -5.74 -1.08 -8.58 -0.44 -2.85 -1.01 -5.67 -1.51 -8.52 l -0.75 -4.27 c -0.23 -1.44 -0.38 -2.9 -0.32 -4.37 0.05 -1.47 0.29 -2.94 0.81 -4.33 0.51 -1.39 1.26 -2.65 2.01 -3.88 0.75 -1.23 1.54 -2.44 2.12 -3.73 0.61 -1.29 0.92 -2.68 1.08 -4.11 0.33 -2.83 0.23 -5.81 1.25 -8.55 l 0.06 0.02"/>
+          <path class="fig" d="m 51.08 188.14 c 0.14 -0.89 0.21 -1.78 0.22 -2.68 0 -0.45 -0.01 -0.89 -0.04 -1.34 -0.03 -0.46 0 -0.92 0.04 -1.37 0.09 -0.91 0.27 -1.8 0.44 -2.68 0.18 -0.88 0.29 -1.76 0.42 -2.65 0.25 -1.78 0.56 -3.56 0.77 -5.33 0.2 -1.78 0.38 -3.56 0.44 -5.35 0.12 -1.74 -0.59 -3.43 -1.07 -5.17 -0.51 -1.75 -0.58 -3.61 -0.39 -5.41 0.2 -1.8 0.6 -3.56 0.99 -5.32 0.36 -1.76 0.92 -3.51 0.89 -5.27 -0.09 -1.76 -0.68 -3.47 -1.25 -5.17 -0.28 -0.85 -0.56 -1.72 -0.79 -2.6 -0.22 -0.89 -0.37 -1.79 -0.47 -2.7 -0.18 -1.82 -0.14 -3.66 0.15 -5.47 0.16 -0.92 0.34 -1.75 0.42 -2.64 0.09 -0.88 0.13 -1.76 0.1 -2.65 -0.04 -1.77 -0.29 -3.54 -0.62 -5.3 -0.17 -0.88 -0.36 -1.75 -0.56 -2.63 -0.21 -0.88 -0.39 -1.77 -0.54 -2.66 -0.6 -3.57 -0.7 -7.22 -0.3 -10.8 l 0.07 0.01 c -0.19 3.59 0.07 7.19 0.76 10.7 0.33 1.75 0.86 3.47 1.22 5.25 0.38 1.77 0.62 3.58 0.68 5.41 0.03 0.91 0 1.83 -0.09 2.74 -0.08 0.91 -0.27 1.83 -0.44 2.69 -0.31 1.74 -0.37 3.52 -0.22 5.29 0.08 0.88 0.22 1.76 0.41 2.62 0.2 0.86 0.45 1.72 0.72 2.58 0.53 1.71 1.06 3.48 1.1 5.33 -0.01 1.86 -0.67 3.57 -1.03 5.33 -0.41 1.75 -0.84 3.5 -0.99 5.29 -0.08 0.89 -0.1 1.79 -0.02 2.67 0.08 0.89 0.27 1.76 0.54 2.6 0.27 0.85 0.6 1.69 0.86 2.56 0.26 0.87 0.45 1.8 0.42 2.74 -0.05 1.81 -0.17 3.62 -0.41 5.41 -0.24 1.79 -0.57 3.56 -0.85 5.34 -0.14 0.89 -0.29 1.78 -0.5 2.66 -0.2 0.88 -0.41 1.75 -0.52 2.63 -0.06 0.44 -0.09 0.88 -0.09 1.32 0.01 0.45 0 0.91 -0.03 1.36 -0.05 0.9 -0.18 1.8 -0.39 2.68 l -0.07 -0.01"/>
+          <path class="fig" d="m 43.57 25 c 0.11 0.5 0.19 1.01 0.26 1.53 0.07 0.51 0.11 1.03 0.15 1.54 0.03 0.52 0.05 1.03 0.04 1.55 -0.01 0.52 -0.03 1.03 -0.08 1.55 -0.05 -0.51 -0.08 -1.03 -0.11 -1.54 l -0.1 -1.54 -0.09 -1.54 c -0.03 -0.51 -0.06 -1.03 -0.07 -1.54"/>
+          <path class="fig" d="m 43.84 31.36 c -0.28 0.97 -0.99 1.76 -1.77 2.36 -0.79 0.61 -1.69 1.05 -2.55 1.54 -0.87 0.48 -1.67 1.03 -2.35 1.77 -0.18 0.17 -0.44 0.33 -0.72 0.36 -0.27 0.03 -0.51 0.01 -0.76 0.02 -0.49 0 -0.99 0.01 -1.48 0.03 -0.98 0.05 -1.96 0.16 -2.89 0.44 -0.93 0.28 -1.8 0.75 -2.58 1.32 -1.57 1.16 -2.72 2.82 -3.41 4.64 -0.7 1.82 -0.96 3.79 -0.95 5.75 0 0.98 0.05 1.97 0.1 2.96 l 0.08 1.49 c 0.02 0.51 0 1.02 -0.05 1.52 -0.2 2.02 -0.83 3.91 -1.12 5.85 -0.32 1.94 -0.47 3.9 -0.46 5.87 -0.01 0.99 -0.05 1.99 -0.08 2.99 l -0.05 1.5 c -0.03 0.51 -0.11 1.02 -0.21 1.51 -0.41 1.99 -1.18 3.83 -1.54 5.74 -0.38 1.92 -0.53 3.89 -0.63 5.85 -0.09 1.97 -0.09 3.94 -0.05 5.92 0.03 1.98 -0.01 4.02 -0.58 6 -0.29 0.98 -0.73 1.93 -1.32 2.77 -0.6 0.86 -1.34 1.52 -1.92 2.29 -0.29 0.38 -0.52 0.77 -0.72 1.21 -0.2 0.44 -0.37 0.91 -0.62 1.38 -0.48 0.92 -1.25 1.72 -2.11 2.26 -0.4 0.27 -0.69 0.56 -0.69 0.91 0 0.17 0.06 0.29 0.18 0.35 0.12 0.07 0.37 0.1 0.59 0.11 0.9 0.04 1.82 -0.35 2.39 -1.04 l 0.79 -0.93 -0.27 1.18 c -0.34 1.45 -0.67 2.9 -0.92 4.36 -0.12 0.73 -0.22 1.46 -0.29 2.2 -0.03 0.37 -0.06 0.73 -0.07 1.1 -0.01 0.18 -0.01 0.37 -0.01 0.55 0 0.19 -0.01 0.37 0.02 0.5 0.03 0.14 0.08 0.22 0.15 0.26 0.07 0.04 0.2 0.04 0.32 0 0.23 -0.08 0.39 -0.36 0.49 -0.69 0.2 -0.69 0.35 -1.43 0.51 -2.15 l 0.45 -2.19 c 0.08 -0.37 0.16 -0.73 0.25 -1.1 0.1 -0.37 0.18 -0.73 0.4 -1.12 l 0.54 -0.98 -0.07 1.13 -0.29 4.58 -0.14 2.29 -0.04 0.57 c -0.01 0.18 -0.01 0.36 0.01 0.53 0.04 0.35 0.19 0.63 0.43 0.64 0.11 0.01 0.25 -0.03 0.36 -0.12 0.11 -0.09 0.19 -0.21 0.25 -0.37 0.12 -0.3 0.16 -0.7 0.21 -1.07 0.1 -0.75 0.15 -1.51 0.2 -2.27 0.1 -1.52 0.22 -3.1 0.83 -4.56 l 0.26 -0.61 0.15 0.64 c 0.09 0.39 0.1 0.73 0.12 1.08 0.01 0.35 0.02 0.7 0.02 1.04 0 0.69 -0.02 1.39 -0.04 2.08 -0.02 0.69 -0.05 1.38 -0.09 2.07 -0.01 0.35 -0.06 0.69 0 0.98 0.05 0.3 0.23 0.51 0.47 0.49 0.25 -0.01 0.52 -0.2 0.63 -0.46 0.13 -0.27 0.15 -0.6 0.16 -0.93 0.02 -0.69 0.05 -1.38 0.09 -2.07 0.08 -1.38 0.2 -2.76 0.37 -4.14 l 0.02 -0.15 0.16 -0.01 c 0.12 -0.01 0.25 0.04 0.33 0.12 0.09 0.08 0.13 0.17 0.17 0.25 0.07 0.17 0.09 0.34 0.09 0.51 l -0.01 0.9 -0.02 1.8 -0.01 0.9 c 0 0.3 -0.03 0.61 0.03 0.85 0.05 0.23 0.27 0.42 0.43 0.37 0.17 -0.04 0.29 -0.31 0.34 -0.58 l 1.08 -7.09 c 0.2 -1.18 0.24 -2.36 0.18 -3.55 -0.04 -1.19 -0.18 -2.38 -0.18 -3.59 0.02 -1.21 0.22 -2.41 0.52 -3.58 0.29 -1.17 0.71 -2.3 1.08 -3.43 0.75 -2.27 1.48 -4.55 2.18 -6.84 0.35 -1.15 0.69 -2.29 0.99 -3.45 0.15 -0.58 0.28 -1.16 0.35 -1.75 0.06 -0.59 0.06 -1.19 0.05 -1.78 -0.02 -1.19 -0.17 -2.39 -0.07 -3.6 0.11 -1.21 0.5 -2.36 0.9 -3.48 0.41 -1.13 0.86 -2.24 1.26 -3.36 0.39 -1.13 0.76 -2.28 0.86 -3.47 l 0.07 0 c -0.09 1.2 -0.45 2.36 -0.84 3.49 -0.39 1.13 -0.84 2.25 -1.24 3.37 -0.39 1.13 -0.78 2.27 -0.88 3.46 -0.09 1.19 0.07 2.38 0.09 3.58 0.02 0.6 0.02 1.2 -0.04 1.8 -0.06 0.6 -0.19 1.19 -0.34 1.77 -0.3 1.16 -0.63 2.31 -0.97 3.46 -0.69 2.29 -1.41 4.58 -2.15 6.86 -0.36 1.14 -0.77 2.27 -1.06 3.42 -0.29 1.15 -0.47 2.34 -0.49 3.52 0 1.18 0.15 2.38 0.19 3.58 0.06 1.2 0.03 2.42 -0.17 3.61 l -1.05 7.12 c -0.03 0.16 -0.07 0.32 -0.16 0.47 -0.08 0.15 -0.22 0.32 -0.43 0.38 -0.21 0.06 -0.43 -0.02 -0.57 -0.15 -0.15 -0.12 -0.24 -0.3 -0.28 -0.47 -0.08 -0.35 -0.04 -0.64 -0.05 -0.94 l 0.01 -0.9 0.02 -1.8 0.01 -0.9 c 0.01 -0.26 -0.11 -0.56 -0.21 -0.52 l 0.18 -0.16 c -0.16 1.37 -0.28 2.74 -0.35 4.11 -0.04 0.69 -0.06 1.37 -0.08 2.06 -0.01 0.35 -0.02 0.73 -0.19 1.09 -0.17 0.37 -0.53 0.67 -0.97 0.69 -0.22 0.01 -0.46 -0.09 -0.62 -0.25 -0.16 -0.17 -0.23 -0.38 -0.27 -0.56 -0.07 -0.39 -0.02 -0.74 -0.01 -1.08 l 0.08 -2.07 c 0.02 -0.69 0.03 -1.38 0.03 -2.06 -0.01 -0.67 0 -1.4 -0.12 -2 l 0.41 0.02 c -0.57 1.38 -0.69 2.9 -0.78 4.42 -0.05 0.76 -0.09 1.53 -0.19 2.3 -0.06 0.38 -0.08 0.76 -0.24 1.18 -0.14 0.4 -0.54 0.83 -1.1 0.79 -0.26 -0.02 -0.51 -0.2 -0.64 -0.41 -0.13 -0.21 -0.18 -0.43 -0.21 -0.64 -0.03 -0.21 -0.03 -0.42 -0.02 -0.62 l 0.03 -0.57 0.13 -2.29 0.27 -4.58 0.47 0.15 c -0.14 0.26 -0.24 0.63 -0.33 0.98 -0.09 0.36 -0.17 0.72 -0.24 1.08 l -0.44 2.19 c -0.15 0.74 -0.3 1.46 -0.51 2.2 -0.11 0.36 -0.31 0.84 -0.81 1.03 -0.23 0.09 -0.5 0.11 -0.76 -0.02 -0.27 -0.13 -0.4 -0.42 -0.44 -0.64 -0.04 -0.23 -0.03 -0.43 -0.03 -0.61 0 -0.19 0 -0.38 0.01 -0.57 0.01 -0.38 0.03 -0.75 0.06 -1.13 0.06 -0.75 0.16 -1.5 0.28 -2.24 0.24 -1.48 0.57 -2.94 0.9 -4.4 l 0.51 0.25 c -0.7 0.83 -1.78 1.3 -2.87 1.26 -0.27 -0.02 -0.53 -0.02 -0.85 -0.18 -0.16 -0.08 -0.3 -0.22 -0.39 -0.39 -0.08 -0.16 -0.12 -0.34 -0.12 -0.5 0 -0.32 0.12 -0.64 0.32 -0.88 0.19 -0.23 0.41 -0.4 0.62 -0.55 0.82 -0.52 1.46 -1.21 1.9 -2.05 0.22 -0.41 0.39 -0.87 0.59 -1.34 0.2 -0.47 0.47 -0.94 0.78 -1.34 0.62 -0.82 1.36 -1.5 1.89 -2.28 0.54 -0.78 0.94 -1.66 1.21 -2.58 0.53 -1.85 0.58 -3.83 0.55 -5.79 -0.04 -1.98 -0.04 -3.98 0.05 -5.96 0.09 -1.99 0.25 -3.98 0.64 -5.96 0.38 -1.99 1.16 -3.84 1.54 -5.74 0.09 -0.48 0.17 -0.95 0.2 -1.43 l 0.06 -1.47 c 0.03 -0.98 0.09 -1.96 0.11 -2.95 0 -2 0.18 -4 0.52 -5.97 0.32 -1.98 0.97 -3.87 1.18 -5.81 0.05 -0.48 0.07 -0.97 0.06 -1.45 l -0.07 -1.48 c -0.05 -0.99 -0.09 -1.99 -0.07 -2.99 0.01 -1.99 0.29 -4.03 1.03 -5.9 0.73 -1.87 1.95 -3.58 3.59 -4.78 0.82 -0.59 1.72 -1.07 2.7 -1.35 0.97 -0.29 1.98 -0.38 2.98 -0.41 0.5 -0.01 1 -0.01 1.49 0 0.25 0 0.5 0.02 0.73 -0.01 0.22 -0.02 0.41 -0.13 0.59 -0.28 0.18 -0.16 0.35 -0.34 0.54 -0.51 0.19 -0.17 0.39 -0.32 0.59 -0.47 0.41 -0.29 0.84 -0.54 1.28 -0.77 0.87 -0.47 1.77 -0.89 2.56 -1.48 0.79 -0.58 1.49 -1.33 1.78 -2.28 l 0.07 0.02"/>
+          <path class="fig" d="m 30.07 51.29 c 0.87 2.79 0.81 5.74 1.21 8.58 0.1 0.71 0.23 1.42 0.41 2.1 0.2 0.68 0.46 1.34 0.77 1.99 0.62 1.29 1.41 2.49 2.16 3.73 0.76 1.24 1.48 2.52 1.96 3.93 0.48 1.4 0.68 2.89 0.7 4.35 0.03 1.47 -0.14 2.93 -0.38 4.37 l -0.75 4.27 c -2.33 11.32 -3.33 22.9 -3.62 34.43 0.03 2.88 0.34 5.75 1.14 8.51 0.76 2.78 1.75 5.5 2.42 8.34 0.34 1.42 0.59 2.86 0.7 4.33 0.11 1.47 0.08 2.92 0.05 4.37 -0.06 2.9 -0.26 5.78 -0.25 8.66 -0.01 2.88 0.22 5.74 0.83 8.54 0.6 2.81 1.52 5.55 2.34 8.32 0.43 1.38 0.78 2.81 1.05 4.23 l 0.85 4.26 c 0.26 1.43 0.43 2.89 0.34 4.35 -0.06 0.72 -0.12 1.45 -0.22 2.16 -0.07 0.71 -0.08 1.45 0.25 2.09 l -0.06 0.03 c -0.37 -0.65 -0.39 -1.42 -0.34 -2.14 0.07 -0.72 0.11 -1.44 0.15 -2.16 0.05 -1.44 -0.17 -2.86 -0.46 -4.27 -0.66 -2.81 -1.17 -5.67 -2.07 -8.39 -0.86 -2.75 -1.82 -5.49 -2.47 -8.34 -0.67 -2.85 -0.88 -5.78 -0.89 -8.68 -0.01 -2.91 0.15 -5.8 0.24 -8.68 0.04 -1.44 0.08 -2.89 -0.01 -4.3 -0.1 -1.42 -0.33 -2.83 -0.65 -4.23 -0.65 -2.79 -1.59 -5.53 -2.3 -8.35 -0.77 -2.81 -1.04 -5.75 -1.01 -8.65 0.01 -2.9 0.3 -5.79 0.5 -8.67 0.22 -2.88 0.45 -5.77 0.69 -8.65 0.26 -2.88 0.55 -5.76 0.92 -8.63 0.37 -2.87 0.87 -5.73 1.33 -8.58 0.44 -2.86 1.11 -5.69 1.09 -8.54 -0.01 -1.42 -0.19 -2.84 -0.63 -4.18 -0.45 -1.34 -1.14 -2.6 -1.88 -3.83 -0.74 -1.23 -1.51 -2.47 -2.12 -3.81 -0.3 -0.67 -0.55 -1.36 -0.75 -2.07 -0.18 -0.72 -0.29 -1.44 -0.38 -2.16 -0.34 -2.89 -0.14 -5.81 -0.92 -8.61 l 0.07 -0.02"/>
+          <path class="fig" d="m 48.86 188.15 c -0.41 -1.77 -0.56 -3.6 -0.69 -5.4 -0.15 -1.8 -0.38 -3.59 -0.73 -5.36 -0.35 -1.76 -0.77 -3.55 -0.98 -5.36 -0.24 -1.81 -0.35 -3.63 -0.4 -5.45 -0.01 -1.93 0.82 -3.62 1.34 -5.33 0.27 -0.85 0.43 -1.73 0.5 -2.63 0.06 -0.89 0.03 -1.8 -0.06 -2.69 -0.18 -1.8 -0.62 -3.56 -1.03 -5.32 -0.37 -1.76 -1.03 -3.5 -0.95 -5.38 0.11 -1.85 0.66 -3.62 1.2 -5.34 0.55 -1.72 0.94 -3.46 1.05 -5.25 0.13 -1.78 0.02 -3.57 -0.32 -5.32 -0.41 -1.78 -0.5 -3.67 -0.36 -5.5 0.13 -1.83 0.44 -3.63 0.78 -5.41 0.34 -1.78 0.64 -3.56 0.87 -5.35 0.48 -3.58 0.74 -7.19 0.79 -10.82 l 0.07 0 c 0.17 3.62 0.06 7.27 -0.32 10.88 -0.19 1.81 -0.46 3.61 -0.76 5.4 -0.29 1.79 -0.61 3.56 -0.72 5.35 -0.06 0.89 -0.06 1.78 -0.01 2.67 0.05 0.89 0.2 1.75 0.37 2.65 0.33 1.81 0.42 3.67 0.27 5.5 -0.08 0.92 -0.21 1.83 -0.42 2.73 -0.2 0.9 -0.48 1.77 -0.76 2.64 -0.57 1.72 -1.18 3.42 -1.34 5.2 -0.07 0.88 0.05 1.77 0.22 2.65 0.17 0.88 0.4 1.76 0.59 2.65 0.39 1.77 0.8 3.54 1.03 5.35 0.21 1.8 0.18 3.67 -0.31 5.45 -0.48 1.76 -1.2 3.46 -1.14 5.21 0.05 1.8 0.23 3.6 0.43 5.39 0.18 1.8 0.56 3.54 0.9 5.34 0.33 1.8 0.47 3.62 0.57 5.43 0.07 1.81 0.12 3.62 0.4 5.41 l -0.07 0.01"/>
+          <path class="fig" d="m 43.17 140.5 c -0.06 0.58 0.05 1.12 0.15 1.68 0.11 0.55 0.21 1.14 0.17 1.75 -0.03 0.3 -0.09 0.61 -0.23 0.9 -0.13 0.28 -0.34 0.56 -0.61 0.73 -0.27 0.17 -0.58 0.27 -0.89 0.27 -0.31 -0.01 -0.62 -0.13 -0.8 -0.37 0.5 0.33 1.1 0.12 1.48 -0.19 0.39 -0.32 0.55 -0.85 0.6 -1.37 0.05 -0.54 -0.03 -1.09 -0.07 -1.67 -0.04 -0.57 -0.03 -1.19 0.2 -1.73"/>
+          <path class="fig" d="m 57.18 140.5 c 0.24 0.54 0.25 1.16 0.2 1.73 -0.04 0.58 -0.12 1.13 -0.07 1.67 0.04 0.53 0.2 1.05 0.59 1.37 0.38 0.31 0.98 0.52 1.48 0.19 -0.18 0.24 -0.49 0.36 -0.8 0.37 -0.31 0 -0.62 -0.1 -0.89 -0.27 -0.27 -0.17 -0.48 -0.44 -0.61 -0.73 -0.13 -0.29 -0.2 -0.6 -0.23 -0.9 -0.05 -0.61 0.06 -1.19 0.17 -1.75 0.1 -0.56 0.21 -1.1 0.15 -1.68"/>
+          <path class="fig" d="m 42.82 159.33 c 0.42 0.26 0.76 0.54 1.11 0.81 0.35 0.28 0.7 0.53 1.05 0.88 -0.5 -0.01 -0.95 -0.23 -1.33 -0.52 -0.37 -0.3 -0.7 -0.69 -0.83 -1.17"/>
+          <path class="fig" d="m 28.23 75.32 c 0.08 0.43 -0.04 0.9 -0.26 1.29 -0.21 0.4 -0.52 0.73 -0.82 1.03 -0.63 0.59 -1.28 1.14 -2.02 1.59 0.25 -0.36 0.52 -0.69 0.81 -1.01 0.28 -0.32 0.59 -0.62 0.89 -0.91 0.3 -0.29 0.59 -0.58 0.84 -0.9 0.25 -0.32 0.45 -0.67 0.56 -1.1"/>
+          <path class="fig" d="m 72.6 75.32 c 0.11 0.42 0.31 0.78 0.56 1.1 0.25 0.32 0.54 0.61 0.84 0.9 0.3 0.29 0.61 0.59 0.89 0.91 0.29 0.32 0.56 0.65 0.81 1.01 -0.75 -0.45 -1.39 -1 -2.02 -1.59 -0.31 -0.31 -0.61 -0.64 -0.82 -1.03 -0.22 -0.39 -0.35 -0.86 -0.26 -1.29"/>
+          <path class="fig" d="m 36.09 37.31 c 0.37 -0.11 0.76 -0.14 1.15 -0.12 0.38 0.03 0.77 0.1 1.12 0.26 -0.39 0.02 -0.76 -0.01 -1.14 -0.03 -0.38 -0.03 -0.75 -0.05 -1.13 -0.11"/>
+          <path class="fig" d="m 64.2 37.24 c -0.46 0.09 -0.91 0.11 -1.37 0.11 -0.46 0 -0.91 -0.02 -1.37 -0.11 0.46 -0.09 0.91 -0.11 1.37 -0.11 0.46 0 0.92 0.03 1.37 0.11"/>
+          <path class="fig" d="m 50.49 34.65 c -0.12 1.08 -0.29 2.14 -0.38 3.21 -0.04 0.53 -0.08 1.07 -0.08 1.6 0.01 0.53 0.05 1.07 0.07 1.6 0.04 1.07 0.14 2.15 0.17 3.23 l 0.05 1.62 c 0 0.54 0.02 1.08 0.01 1.62 -0.09 -0.53 -0.15 -1.07 -0.23 -1.61 l -0.18 -1.61 c -0.11 -1.08 -0.22 -2.14 -0.27 -3.23 -0.02 -0.54 -0.06 -1.09 -0.05 -1.63 0.02 -0.55 0.07 -1.09 0.16 -1.63 0.09 -0.54 0.19 -1.07 0.31 -1.6 0.13 -0.53 0.26 -1.05 0.42 -1.57"/>
+          <path class="fig" d="m 45.01 90.05 c 0.33 0.2 0.52 0.51 0.65 0.84 0.11 0.33 0.16 0.7 0.03 1.06 -0.23 -0.31 -0.35 -0.6 -0.46 -0.91 -0.1 -0.31 -0.2 -0.61 -0.22 -0.99"/>
+          <path class="fig" d="m 54.81 90.05 c -0.02 0.38 -0.11 0.68 -0.22 0.99 -0.12 0.3 -0.23 0.6 -0.46 0.91 -0.13 -0.36 -0.08 -0.73 0.03 -1.06 0.13 -0.33 0.32 -0.64 0.65 -0.84"/>
+          <path class="fig" d="m 58.16 6.45 c 0.12 -0.07 0.26 -0.02 0.34 0.07 0.08 0.09 0.12 0.24 0.03 0.35 -0.1 -0.09 -0.15 -0.14 -0.2 -0.19 -0.05 -0.06 -0.09 -0.12 -0.17 -0.22"/>
+          <path class="fig" d="m 58.19 7.41 c 0.12 0.09 0.16 0.24 0.15 0.37 -0.02 0.13 -0.08 0.27 -0.21 0.34 -0.03 -0.15 -0.02 -0.25 -0.02 -0.36 0.01 -0.11 0.03 -0.21 0.08 -0.35"/>
+          <path class="fig" d="m 59.06 7.92 c 0.14 0.12 0.18 0.32 0.14 0.49 -0.04 0.17 -0.16 0.34 -0.33 0.39 0.05 -0.17 0.08 -0.3 0.11 -0.44 0.03 -0.14 0.05 -0.26 0.08 -0.44"/>
+          <path class="fig" d="m 58.28 9.4 c 0.05 0.14 0 0.28 -0.08 0.39 -0.09 0.1 -0.22 0.17 -0.37 0.15 0.07 -0.13 0.13 -0.21 0.19 -0.29 0.07 -0.08 0.14 -0.15 0.26 -0.24"/>
+          <path class="fig" d="m 61.05 9.44 c 0.17 0.09 0.27 0.25 0.32 0.43 0.04 0.17 0.04 0.37 -0.07 0.53 -0.07 -0.17 -0.11 -0.32 -0.15 -0.47 -0.04 -0.15 -0.08 -0.3 -0.1 -0.48"/>
+          <path class="fig" d="m 61.28 11.17 c 0.02 0.15 -0.02 0.29 -0.08 0.41 -0.07 0.12 -0.15 0.23 -0.29 0.31 -0.01 -0.17 0.03 -0.29 0.08 -0.41 0.06 -0.11 0.14 -0.22 0.29 -0.31"/>
+          <path class="fig" d="m 60.2 11.04 c 0.06 0.13 0.03 0.25 -0.03 0.36 -0.06 0.1 -0.15 0.19 -0.29 0.21 0.01 -0.14 0.05 -0.23 0.09 -0.32 0.05 -0.09 0.11 -0.17 0.23 -0.25"/>
+          <path class="fig" d="m 59.99 12.77 c 0.02 0.11 -0.03 0.2 -0.09 0.26 -0.06 0.06 -0.14 0.11 -0.25 0.11 0 -0.13 0.03 -0.2 0.09 -0.26 0.06 -0.06 0.13 -0.1 0.25 -0.11"/>
+          <path class="fig" d="m 59.11 14.36 c 0.03 0.11 -0.03 0.19 -0.1 0.23 -0.07 0.04 -0.16 0.05 -0.25 -0.03 0.05 -0.1 0.09 -0.14 0.13 -0.17 0.05 -0.02 0.1 -0.04 0.21 -0.03"/>
+          <path class="fig" d="m 31.19 54.15 c 0.37 0.6 0.84 1.02 1.39 1.39 0.54 0.38 1.14 0.69 1.71 1.11 -0.7 -0.09 -1.37 -0.34 -1.97 -0.74 -0.29 -0.21 -0.57 -0.45 -0.77 -0.76 -0.21 -0.3 -0.35 -0.65 -0.36 -1.01"/>
+          <path class="fig" d="m 68.13 55.73 c -0.07 0.6 -0.51 1.13 -1.03 1.44 -0.53 0.3 -1.2 0.42 -1.76 0.18 0.58 -0.13 1.07 -0.31 1.53 -0.57 0.46 -0.26 0.86 -0.6 1.26 -1.04"/>
+          <path class="fig" d="m 49.58 70.4 c 0.05 1.16 0.07 2.31 0.1 3.47 l 0.08 3.46 0.08 3.46 c 0.02 1.16 0.05 2.31 0.05 3.47 -0.15 -1.15 -0.24 -2.3 -0.32 -3.46 -0.08 -1.15 -0.11 -2.31 -0.15 -3.47 -0.01 -1.16 -0.03 -2.31 0 -3.47 0.03 -1.16 0.07 -2.31 0.16 -3.47"/>
+        </g>
+        <g id="sites"></g>
+      </svg>
+
+      <div class="map-legend">
+        <span><i style="background:var(--st-ready)"></i>Ready</span>
+        <span><i style="background:var(--st-resting)"></i>Resting</span>
+        <span><i style="background:var(--st-used)"></i>Used today</span>
+        <span><i style="background:var(--st-over)"></i>Overused</span>
+        <span><i style="background:var(--st-never)"></i>Never used</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= TELEMETRY ================= -->
+<div class="mq" aria-hidden="true">
+  <div class="mq-inner">
+    <span>
+      <b>07:42 · dose logged <em>✓</em></b>
+      <b>site R-DELT → <em>used</em></b>
+      <b>09:10 · weight logged</b>
+      <b>draw #4 captured · 32 markers</b>
+      <b>streak · day 12</b>
+      <b>site VG-L → <em>ready</em></b>
+      <b>cycle · week 4/8</b>
+      <b>21:30 · dose logged <em>✓</em></b>
+      <b>export · csv <em>✓</em></b>
+    </span>
+    <span>
+      <b>07:42 · dose logged <em>✓</em></b>
+      <b>site R-DELT → <em>used</em></b>
+      <b>09:10 · weight logged</b>
+      <b>draw #4 captured · 32 markers</b>
+      <b>streak · day 12</b>
+      <b>site VG-L → <em>ready</em></b>
+      <b>cycle · week 4/8</b>
+      <b>21:30 · dose logged <em>✓</em></b>
+      <b>export · csv <em>✓</em></b>
+    </span>
+  </div>
+</div>
+
+<!-- ================= BENTO ================= -->
+<section id="features">
+  <div class="wrap">
+    <div class="label reveal">What's inside</div>
+    <h2 class="reveal">Everything in one place,<br>instead of five.</h2>
+    <p class="lede reveal">Most people track doses in Notes, bloodwork in a drawer, and injection sites
+       from memory. DOSR.ai keeps all of it together, on your phone, private to you.</p>
+
+    <div class="bento">
+      <div class="tile w3 reveal"><div class="spotlight"></div>
+        <div class="tile-viz">
+          <div class="rrow"><span class="rbar" style="width:70px"></span><span class="sub">Stack 1</span><span class="logchip">Log</span></div>
+          <div class="rrow"><span class="rbar done" style="width:54px"></span><span class="lg">Logged</span></div>
+          <div class="rrow"><span class="rbar" style="width:62px"></span><span class="sub">Stack 2</span><span class="logchip">Log</span></div>
+        </div>
+        <h3>Dose &amp; compound logging</h3>
+        <p>Build stacks, log in seconds, keep a full history. What you take is your business — which is why it's blurred here.</p>
+      </div>
+
+      <div class="tile w3 reveal" style="--d:.06s"><div class="spotlight"></div>
+        <div class="tile-viz">
+          <div class="cyc"><i></i><i></i><i></i><i></i><i class="off"></i><i class="off"></i><i class="off"></i><i class="off"></i><span class="t">WEEK 4 / 8</span></div>
+        </div>
+        <h3>Cycles &amp; stacks</h3>
+        <p>On-weeks, off-weeks, and where you are in each — per compound, per stack, without a wall calendar.</p>
+      </div>
+
+      <div class="tile reveal"><div class="spotlight"></div>
+        <div class="tile-viz">
+          <div class="nut">
+            <svg class="nring" width="52" height="52" viewBox="0 0 40 40" aria-hidden="true">
+              <circle cx="20" cy="20" r="15.5" fill="none" stroke="var(--surface-2)" stroke-width="4.5"/>
+              <circle cx="20" cy="20" r="15.5" fill="none" stroke="var(--accent)" stroke-width="4.5"
+                stroke-linecap="round" stroke-dasharray="60.5 97.4" transform="rotate(-90 20 20)"/>
+              <text x="20" y="23" text-anchor="middle">62%</text>
+            </svg>
+            <div class="nbars">
+              <div class="nb"><div class="t"><span>Protein</span><span>114/164g</span></div><div class="bar"><i style="width:70%;background:var(--mc-protein)"></i></div></div>
+              <div class="nb"><div class="t"><span>Carbs</span><span>105/286g</span></div><div class="bar"><i style="width:37%;background:var(--mc-carbs)"></i></div></div>
+              <div class="nb"><div class="t"><span>Fat</span><span>99/95g</span></div><div class="bar"><i style="width:100%;background:var(--mc-fat)"></i></div></div>
+            </div>
           </div>
-          <p>North Carolina, USA</p>
-          <p><a href="mailto:dosr.llc@gmail.com">dosr.llc@gmail.com</a></p>
         </div>
-
-        <div class="foot-col">
-          <h4>Legal</h4>
-          <a href="https://fernandobgobgomez4.github.io/Dosr-ai-legal/privacy-policy" target="_blank" rel="noopener">Privacy Policy</a>
-          <a href="https://fernandobgobgomez4.github.io/Dosr-ai-legal/terms-of-service" target="_blank" rel="noopener">Terms of Service</a>
-        </div>
-
-        <div class="foot-col">
-          <h4>Contact</h4>
-          <a href="mailto:dosr.llc@gmail.com">dosr.llc@gmail.com</a>
-          <p>North Carolina, USA</p>
-        </div>
+        <h3>The rest of the picture</h3>
+        <p>Nutrition with macros and hydration, weight, and lifts — so trends read together.</p>
       </div>
 
-      <div class="copyright">
-        &copy; 2026 DOSR AI LLC &middot; All rights reserved.
+      <div class="tile reveal" style="--d:.06s"><div class="spotlight"></div>
+        <div class="tile-viz"><div class="chips"><span class="chip">DRAW #4</span><span class="chip">32 MARKERS</span><span class="chip">CAMERA → TIMELINE</span></div></div>
+        <h3>Bloodwork scanning</h3>
+        <p>Point your camera at a lab report; the values land in a timeline. No retyping PDFs.</p>
+        <a class="tile-link" href="#tour">See it in the tour ↓</a>
+      </div>
+
+      <div class="tile reveal" style="--d:.12s"><div class="spotlight"></div>
+        <div class="tile-viz"><div class="chips"><span class="chip">EXPORT CSV</span><span class="chip">EXPORT JSON</span><span class="chip">DELETE ANYTIME</span></div></div>
+        <h3>Private by design</h3>
+        <p>Your logs are yours. Export everything whenever you want; deleting your account deletes your data.</p>
       </div>
     </div>
-  </footer>
+  </div>
+</section>
+
+<!-- ================= TOUR ================= -->
+<section id="tour">
+  <div class="wrap">
+    <div class="label reveal">A closer look</div>
+    <h2 class="reveal">Three screens, ninety seconds.</h2>
+
+    <div class="tour-wrap" style="margin-top:52px">
+      <div class="stage">
+        <div class="phone">
+          <div class="phone-inner">
+
+            <!-- SCREEN 1 · HOME (rebuilt from the real home screen) -->
+            <div class="scr on" id="scr0">
+              <div class="app">
+                <div class="s0-brand">
+                  <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">
+                    <g fill="var(--brand-green)">
+                      <path d="M6 .6 C7.6 2 7.6 3.9 6 5.4 C4.4 3.9 4.4 2 6 .6Z"/>
+                      <path d="M11.4 6 C10 7.6 8.1 7.6 6.6 6 C8.1 4.4 10 4.4 11.4 6Z"/>
+                      <path d="M6 11.4 C4.4 10 4.4 8.1 6 6.6 C7.6 8.1 7.6 10 6 11.4Z"/>
+                      <path d="M.6 6 C2 4.4 3.9 4.4 5.4 6 C3.9 7.6 2 7.6 .6 6Z"/>
+                    </g>
+                  </svg>
+                  <b>DOSR</b><i>.ai</i>
+                </div>
+                <div class="s1-top">
+                  <div>
+                    <div class="k">Good morning</div>
+                    <div class="s1-name">Sam</div>
+                    <div class="s1-stats">12 doses · 4 weeks · 1 cycle</div>
+                  </div>
+                  <div class="streak">
+                    <svg class="flame" viewBox="0 0 56 56" aria-hidden="true">
+                      <defs>
+                        <radialGradient id="flameG" cx="50%" cy="65%" r="55%">
+                          <stop offset="0" stop-color="#fbbf24"/>
+                          <stop offset=".65" stop-color="#dc2626" stop-opacity=".95"/>
+                          <stop offset="1" stop-color="#dc2626" stop-opacity="0"/>
+                        </radialGradient>
+                      </defs>
+                      <path d="M28 4 C22 14, 14 18, 14 30 C14 42, 20 50, 28 50 C36 50, 42 42, 42 30 C42 24, 38 22, 36 18 C34 22, 32 22, 30 18 C29 14, 28 10, 28 4 Z" fill="url(#flameG)"/>
+                      <path d="M28 18 C25 24, 22 28, 22 36 C22 42, 25 46, 28 46 C31 46, 34 42, 34 36 C34 30, 32 26, 28 18 Z" fill="#fbbf24" opacity=".9"/>
+                    </svg>
+                    <div class="n">12 <small>DAYS</small></div>
+                  </div>
+                </div>
+                <div class="a-card">
+                  <div class="s1-head"><span class="k">Today</span><span class="done">1/2 done</span><span class="k acc">Stacks ›</span></div>
+                  <div class="s1-row"><span class="rbar" style="width:56px"></span><span class="sub">Stack 1</span><span class="logchip">Log</span></div>
+                  <div class="s1-row"><span class="rbar done" style="width:44px"></span><span class="lg">Logged</span></div>
+                </div>
+                <div class="s1-btn">＋ &nbsp;Log dose</div>
+                <div class="a-card">
+                  <div class="k">Pending</div>
+                  <div style="font-family:var(--mono);font-size:15px;font-weight:700;margin-top:4px">1 <span style="font-size:9px;color:var(--muted);font-weight:400">dose remaining today</span></div>
+                </div>
+              </div>
+              <svg class="mascot" viewBox="0 0 100 100" aria-hidden="true">
+                <defs>
+                  <linearGradient id="jarG1" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stop-color="#1a1a22"/>
+                    <stop offset="1" stop-color="#101015"/>
+                  </linearGradient>
+                </defs>
+                <circle cx="50" cy="60" r="38" fill="var(--accent)" opacity=".08"/>
+                <circle cx="50" cy="60" r="30" fill="var(--accent)" opacity=".12"/>
+                <path d="M30 32 Q30 22 40 22 L60 22 Q70 22 70 32 L70 78 Q70 90 50 90 Q30 90 30 78 Z" fill="url(#jarG1)" stroke="var(--accent)" stroke-width="1.2" opacity=".95"/>
+                <path d="M32 70 Q40 67 50 70 Q60 73 68 70 L68 78 Q68 88 50 88 Q32 88 32 78 Z" fill="var(--accent)" opacity=".22"/>
+                <rect x="36" y="14" width="28" height="10" rx="3" fill="#22222a" stroke="var(--accent)" stroke-width="1" opacity=".95"/>
+                <line x1="40" y1="19" x2="60" y2="19" stroke="var(--accent)" stroke-width=".8" opacity=".6"/>
+                <circle cx="42" cy="50" r="2.2" fill="#0e0e11"/><circle cx="42.5" cy="49.5" r=".7" fill="#fff"/>
+                <circle cx="58" cy="50" r="2.2" fill="#0e0e11"/><circle cx="58.5" cy="49.5" r=".7" fill="#fff"/>
+                <path d="M44 60 Q50 64 56 60" stroke="#0e0e11" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+                <ellipse cx="36" cy="58" rx="2.5" ry="1.4" fill="var(--accent)" opacity=".35"/>
+                <ellipse cx="64" cy="58" rx="2.5" ry="1.4" fill="var(--accent)" opacity=".35"/>
+              </svg>
+              <div class="a-tabs">
+                <span class="ti act"><svg viewBox="0 0 16 16"><path d="M2.5,8 L8,2.8 L13.5,8 M4,7 V13 H12 V7"/></svg><b>Home</b></span>
+                <span class="ti"><svg viewBox="0 0 16 16"><path d="M8,3 L14.5,6 L8,9 L1.5,6 Z M4,7.5 V10.5 C4,12 12,12 12,10.5 V7.5"/></svg><b>Learn</b></span>
+                <span class="ti-mid"><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="7.5"/><circle cx="7.5" cy="8.7" r=".9" fill="var(--accent)" stroke="none"/><circle cx="12.5" cy="8.7" r=".9" fill="var(--accent)" stroke="none"/><path d="M7.5,12 Q10,14 12.5,12"/></svg></span>
+                <span class="ti"><svg viewBox="0 0 16 16"><path d="M3.5,2.5 H11 C12.4,2.5 13,3.4 13,4.5 V13.5 H5.5 C4.1,13.5 3.5,12.6 3.5,11.5 Z M5.5,13.5 V2.5"/></svg><b>Library</b></span>
+                <span class="ti"><svg viewBox="0 0 16 16"><circle cx="8" cy="5.2" r="2.7"/><path d="M3,14 C3,10.5 13,10.5 13,14"/></svg><b>Profile</b></span>
+              </div>
+            </div>
+
+            <!-- SCREEN 2 · BLOODWORK -->
+            <div class="scr" id="scr1">
+              <div class="app">
+                <div class="k" style="font-size:9px">Bloodwork</div>
+                <div class="a-card">
+                  <svg class="spark" viewBox="0 0 220 64" preserveAspectRatio="none" aria-hidden="true">
+                    <defs>
+                      <linearGradient id="sparkFill" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0" stop-color="var(--accent)" stop-opacity=".28"/>
+                        <stop offset="1" stop-color="var(--accent)" stop-opacity="0"/>
+                      </linearGradient>
+                    </defs>
+                    <polygon class="area" points="8,44 60,30 112,36 164,18 212,22 212,62 8,62"/>
+                    <polyline points="8,44 60,30 112,36 164,18 212,22"/>
+                    <circle class="pt" cx="212" cy="22" r="4.5"/>
+                  </svg>
+                  <div class="s2-caption">DRAW #4 · CAPTURED AUG 12</div>
+                </div>
+                <div class="s2-chips">
+                  <span class="chip">GLUCOSE</span><span class="chip">HDL</span><span class="chip">VIT-D</span><span class="chip">+29</span>
+                </div>
+                <div class="a-card">
+                  <div class="k" style="margin-bottom:8px">Draw history</div>
+                  <div class="s2-draws">
+                    <div class="d"><i></i><b>MAR</b></div>
+                    <div class="d"><i></i><b>MAY</b></div>
+                    <div class="d"><i></i><b>JUN</b></div>
+                    <div class="d cur"><i></i><b>AUG</b></div>
+                  </div>
+                </div>
+                <div class="s2-scan">▣ &nbsp;Scan report</div>
+              </div>
+              <div class="a-tabs">
+                <span class="ti"><svg viewBox="0 0 16 16"><path d="M2.5,8 L8,2.8 L13.5,8 M4,7 V13 H12 V7"/></svg><b>Home</b></span>
+                <span class="ti"><svg viewBox="0 0 16 16"><path d="M8,3 L14.5,6 L8,9 L1.5,6 Z M4,7.5 V10.5 C4,12 12,12 12,10.5 V7.5"/></svg><b>Learn</b></span>
+                <span class="ti-mid"><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="7.5"/><circle cx="7.5" cy="8.7" r=".9" fill="var(--accent)" stroke="none"/><circle cx="12.5" cy="8.7" r=".9" fill="var(--accent)" stroke="none"/><path d="M7.5,12 Q10,14 12.5,12"/></svg></span>
+                <span class="ti act"><svg viewBox="0 0 16 16"><path d="M3.5,2.5 H11 C12.4,2.5 13,3.4 13,4.5 V13.5 H5.5 C4.1,13.5 3.5,12.6 3.5,11.5 Z M5.5,13.5 V2.5"/></svg><b>Library</b></span>
+                <span class="ti"><svg viewBox="0 0 16 16"><circle cx="8" cy="5.2" r="2.7"/><path d="M3,14 C3,10.5 13,10.5 13,14"/></svg><b>Profile</b></span>
+              </div>
+            </div>
+
+            <!-- SCREEN 3 · COACH -->
+            <div class="scr" id="scr2">
+              <div class="app" style="gap:9px">
+                <div style="display:flex;align-items:center;gap:8px">
+                  <svg class="jar" viewBox="0 0 100 100" aria-hidden="true">
+                <defs>
+                  <linearGradient id="jarG2" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stop-color="#1a1a22"/>
+                    <stop offset="1" stop-color="#101015"/>
+                  </linearGradient>
+                </defs>
+                <circle cx="50" cy="60" r="38" fill="var(--accent)" opacity=".08"/>
+                <circle cx="50" cy="60" r="30" fill="var(--accent)" opacity=".12"/>
+                <path d="M30 32 Q30 22 40 22 L60 22 Q70 22 70 32 L70 78 Q70 90 50 90 Q30 90 30 78 Z" fill="url(#jarG2)" stroke="var(--accent)" stroke-width="1.2" opacity=".95"/>
+                <path d="M32 70 Q40 67 50 70 Q60 73 68 70 L68 78 Q68 88 50 88 Q32 88 32 78 Z" fill="var(--accent)" opacity=".22"/>
+                <rect x="36" y="14" width="28" height="10" rx="3" fill="#22222a" stroke="var(--accent)" stroke-width="1" opacity=".95"/>
+                <line x1="40" y1="19" x2="60" y2="19" stroke="var(--accent)" stroke-width=".8" opacity=".6"/>
+                <circle cx="42" cy="50" r="2.2" fill="#0e0e11"/><circle cx="42.5" cy="49.5" r=".7" fill="#fff"/>
+                <circle cx="58" cy="50" r="2.2" fill="#0e0e11"/><circle cx="58.5" cy="49.5" r=".7" fill="#fff"/>
+                <path d="M44 60 Q50 64 56 60" stroke="#0e0e11" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+                <ellipse cx="36" cy="58" rx="2.5" ry="1.4" fill="var(--accent)" opacity=".35"/>
+                <ellipse cx="64" cy="58" rx="2.5" ry="1.4" fill="var(--accent)" opacity=".35"/>
+              </svg>
+                  <div>
+                    <div style="font-weight:700;font-size:12px;letter-spacing:-.01em">Coach</div>
+                    <div class="k" style="font-size:7px">Grounded in your logs</div>
+                  </div>
+                </div>
+                <div class="bub c">Morning — you've logged 12 of the last 14 days. Want a look at how your weight's been moving?</div>
+                <div class="bub u">How's my weight trending?</div>
+                <div class="bub c">Down 1.8 lb across those 14 days, and steady week over week. Your last bloodwork draw was 3 weeks ago.
+                  <span class="src">from your logs · educational only</span>
+                </div>
+                <div class="bub c" style="padding:10px 13px"><span class="typing"><i></i><i></i><i></i></span></div>
+              </div>
+              <div class="s3-input"><span class="ph">Ask about your data…</span><span class="send"></span></div>
+              <div class="a-tabs">
+                <span class="ti"><svg viewBox="0 0 16 16"><path d="M2.5,8 L8,2.8 L13.5,8 M4,7 V13 H12 V7"/></svg><b>Home</b></span>
+                <span class="ti"><svg viewBox="0 0 16 16"><path d="M8,3 L14.5,6 L8,9 L1.5,6 Z M4,7.5 V10.5 C4,12 12,12 12,10.5 V7.5"/></svg><b>Learn</b></span>
+                <span class="ti-mid"><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="7.5"/><circle cx="7.5" cy="8.7" r=".9" fill="var(--accent)" stroke="none"/><circle cx="12.5" cy="8.7" r=".9" fill="var(--accent)" stroke="none"/><path d="M7.5,12 Q10,14 12.5,12"/></svg></span>
+                <span class="ti"><svg viewBox="0 0 16 16"><path d="M3.5,2.5 H11 C12.4,2.5 13,3.4 13,4.5 V13.5 H5.5 C4.1,13.5 3.5,12.6 3.5,11.5 Z M5.5,13.5 V2.5"/></svg><b>Library</b></span>
+                <span class="ti"><svg viewBox="0 0 16 16"><circle cx="8" cy="5.2" r="2.7"/><path d="M3,14 C3,10.5 13,10.5 13,14"/></svg><b>Profile</b></span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="steps">
+        <div class="step" data-step="0">
+          <div class="step-idx">01 / HOME</div>
+          <h3>Log in seconds, see the day at a glance</h3>
+          <p>The home screen is the whole ritual: what's due, what's done, and one button to log.
+             The streak flame stays honest — it knows a planned rest day from a missed one.</p>
+          <ul class="ticks">
+            <li>One-tap dose logging from the home screen</li>
+            <li>Stacks with weeks and cycles built in</li>
+            <li>Pending doses, so nothing slips to memory</li>
+          </ul>
+        </div>
+        <div class="step" data-step="1">
+          <div class="step-idx">02 / BLOODWORK</div>
+          <h3>Bloodwork that isn't a folder of PDFs</h3>
+          <p>Scan a lab report with your camera and the values land in a timeline, so you can see
+             how a marker has moved across draws instead of comparing two printouts side by side.</p>
+          <ul class="ticks">
+            <li>Camera capture — no manual entry</li>
+            <li>Markers tracked across every draw</li>
+            <li>Your results stay yours, exportable any time</li>
+          </ul>
+        </div>
+        <div class="step" data-step="2">
+          <div class="step-idx">03 / COACH</div>
+          <h3>A coach with your numbers in front of it</h3>
+          <p>Not a general chatbot. It reads what you logged and answers about you — what you took,
+             when, how your weight and macros have trended, when your last draw was.</p>
+          <ul class="ticks">
+            <li>Grounded in your own logged data</li>
+            <li>Plain answers, not a wall of citations</li>
+            <li>Educational by design — it won't tell you what to take</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CALCULATOR ================= -->
+<section id="calculator">
+  <div class="wrap">
+    <div class="calc-grid">
+      <div>
+        <div class="label reveal">Try one piece of it</div>
+        <h2 class="reveal">The reconstitution math, right here.</h2>
+        <p class="lede reveal">This is the app's own Tools → Calculator, rebuilt for the browser —
+           draw volume, concentration, and what it means on the syringe you actually use.
+           In the app it's saved per compound, with blend, convert and premixed modes.</p>
+        <p class="calc-fine reveal">Arithmetic only — not guidance. It computes the numbers you enter.</p>
+      </div>
+
+      <div class="calc reveal">
+        <div class="c-hero">
+          <div class="k">Draw volume</div>
+          <div class="big" id="outBig">0.050</div>
+          <div class="sub">mL per dose</div>
+          <div class="c-conc" id="outConc">5.00 mg/mL • 5000 mcg/mL</div>
+        </div>
+
+        <div class="calc-fields">
+          <div class="field"><label for="vialIn">Vial (mg)</label><input id="vialIn" type="number" inputmode="decimal" value="10" min="0" step="0.5"></div>
+          <div class="field"><label for="waterIn">Water (ml)</label><input id="waterIn" type="number" inputmode="decimal" value="2" min="0" step="0.5"></div>
+          <div class="field"><label for="doseIn">Dose (mcg)</label><input id="doseIn" type="number" inputmode="numeric" value="250" min="0" step="50"></div>
+        </div>
+        <input type="range" id="doseRange" min="0" max="1000" step="10" value="250" aria-label="Dose in micrograms">
+
+        <div class="c-lab">Choose syringe</div>
+        <div class="syr-grid" id="syGrid">
+          <button class="sy on" data-sy="u100"><span class="n">U-100 (1 mL)</span><span class="v">5.00 u</span></button>
+          <button class="sy" data-sy="u50"><span class="n">U-50 (0.5 mL)</span><span class="v">5.00 u</span></button>
+          <button class="sy" data-sy="u40"><span class="n">U-40 (1 mL)</span><span class="v">2.00 u</span><span class="note">different calibration</span></button>
+          <button class="sy" data-sy="u30"><span class="n">U-30 (0.3 mL)</span><span class="v">5.00 u</span></button>
+        </div>
+
+        <div class="syr-card">
+          <div class="syr-head"><span class="n" id="syrName">U-100 (1 mL)</span><span class="f" id="fillPct">fills 5%</span></div>
+          <svg class="syr" viewBox="0 0 280 56" aria-hidden="true">
+            <defs>
+              <linearGradient id="syrFill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="var(--accent)" stop-opacity=".9"/>
+                <stop offset="1" stop-color="var(--accent)" stop-opacity=".5"/>
+              </linearGradient>
+            </defs>
+            <text class="scl" id="sc0" x="24" y="11" text-anchor="middle">0</text>
+            <text class="scl" id="scM" x="124" y="11" text-anchor="middle">0.5</text>
+            <text class="scl" id="scE" x="224" y="11" text-anchor="middle">1</text>
+            <g id="sTicks"></g>
+            <rect class="flange" x="0" y="14" width="6" height="34" rx="1.5"/>
+            <rect class="rod" x="6" y="26" width="18" height="10"/>
+            <rect class="barrel" x="24" y="20" width="200" height="22" rx="2"/>
+            <rect class="liquid" id="sLiquid" x="24" y="21" width="10" height="20" rx="1.5"/>
+            <rect class="seal" id="sSeal" x="33" y="17" width="1.5" height="28"/>
+            <circle class="drip" id="sDrip" cx="34" cy="48" r="2"/>
+            <rect class="hub" x="224" y="29" width="14" height="4"/>
+            <line class="needle" x1="238" y1="31" x2="274" y2="31"/>
+          </svg>
+        </div>
+        <div class="calc-warn" id="calcWarn">Exceeds this syringe — pick a larger one, or more water spreads the dose out.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PRICING ================= -->
+<section id="pricing">
+  <div class="wrap">
+    <div class="label reveal">Pricing</div>
+    <h2 class="reveal">Free to use. Pro when you want more.</h2>
+    <p class="lede reveal">Logging is free and stays free. Pro lifts the limits on the parts that cost us money to run.</p>
+
+    <div class="tiers">
+      <div class="tier reveal">
+        <div class="name">Free</div>
+        <div class="price">$0</div>
+        <ul>
+          <li>Dose and compound logging</li>
+          <li>Injection site body map</li>
+          <li>Reconstitution calculator</li>
+          <li>Weight, lifts and nutrition tracking</li>
+          <li>Data export</li>
+        </ul>
+      </div>
+      <div class="tier pro reveal" style="--d:.08s">
+        <div class="name">DOSR Pro</div>
+        <div class="price">$9.99 <small>/ month</small></div>
+        <ul>
+          <li>Everything in Free</li>
+          <li>Unlimited AI coach conversations</li>
+          <li>Unlimited bloodwork scanning</li>
+          <li>Full history, no cut-off</li>
+          <li>Support a two-person team</li>
+        </ul>
+        <span class="trial">1 week free · or $79.99/year</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FAQ ================= -->
+<section id="faq">
+  <div class="wrap">
+    <div class="label reveal">Questions</div>
+    <h2 class="reveal">Before you download.</h2>
+
+    <div class="faq reveal">
+      <details open>
+        <summary>Is DOSR.ai free?</summary>
+        <p>Yes. Logging doses, building stacks, the injection site map, the reconstitution calculator
+           and data export are all free and stay free. Pro removes the limits on AI coach usage and
+           bloodwork scanning, and it comes with a one-week free trial.</p>
+      </details>
+      <details>
+        <summary>Does the app give medical or dosing advice?</summary>
+        <p>No, and it is built specifically not to. DOSR.ai records what you decide to do — it does
+           not tell you what to take, how much, or when. The AI coach answers questions about your own
+           logged data in an educational context. It is not a doctor, it is not a substitute for one,
+           and it will decline to act like one.</p>
+      </details>
+      <details>
+        <summary>What happens to my data?</summary>
+        <p>It's yours. Everything you log is tied to your account, exportable to CSV or JSON whenever
+           you want, and deleted along with your account whenever you choose to delete it. Bloodwork
+           scanning and the AI coach are opt-in, and neither runs unless you turn it on.</p>
+      </details>
+      <details>
+        <summary>Does it work on Android?</summary>
+        <p>Yes. DOSR.ai is on both the App Store and Google Play, with the same feature set on each.</p>
+      </details>
+      <details>
+        <summary>What can I actually track?</summary>
+        <p>Compounds and stacks with doses, units, frequency and cycles; injection sites with rotation
+           history across IM and SubQ locations; bloodwork draws over time; body weight; lifts; and
+           nutrition with hydration. The coach can read across all of it.</p>
+      </details>
+      <details>
+        <summary>Who is it for?</summary>
+        <p>Adults running their own protocols who currently track in a notes app, a spreadsheet, or
+           memory. If you already log your lifts and your macros carefully, this is for the part of
+           your routine that doesn't have a home yet. 18+.</p>
+      </details>
+    </div>
+
+    <div class="disclaimer reveal">
+      <p><strong>DOSR.ai is a tracking and organization tool, not a medical device or a medical service.</strong>
+         It does not diagnose, treat, or prescribe, and nothing in the app or on this site is medical
+         advice. The calculator on this page performs arithmetic on numbers you enter; it does not
+         suggest them. Decisions about any substance you take are between you and a qualified
+         healthcare professional. Intended for adults 18 and over.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot">
+    <div>
+      <a class="brand" href="/">DOSR<span class="dot">.ai</span></a>
+      <small>DOSR AI LLC · North Carolina, USA<br>© 2026 DOSR AI LLC. All rights reserved.</small>
+    </div>
+    <div class="foot-links">
+      <a href="#features">Features</a>
+      <a href="#calculator">Calculator</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">FAQ</a>
+      <a href="/privacy">Privacy</a>
+      <a href="/terms">Terms</a>
+      <a href="mailto:support@dosrai.com">Contact</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  document.documentElement.classList.add('js');
+  var $=function(s,c){return (c||document).querySelector(s)};
+  var $$=function(s,c){return Array.prototype.slice.call((c||document).querySelectorAll(s))};
+  var NS='http://www.w3.org/2000/svg';
+
+  /* ---------- reveal on scroll ---------- */
+  var ro=new IntersectionObserver(function(es){
+    es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); ro.unobserve(e.target);} });
+  },{threshold:.16});
+  $$('.reveal').forEach(function(el){ro.observe(el)});
+
+  /* ---------- pipette scroll progress ---------- */
+  var pip=$('#pipFill');
+  function prog(){
+    var h=document.documentElement;
+    var p=h.scrollTop/(h.scrollHeight-h.clientHeight)*100;
+    pip.style.height=Math.max(0,Math.min(100,p))+'%';
+  }
+  addEventListener('scroll',prog,{passive:true}); prog();
+
+  /* ---------- spotlight tiles ---------- */
+  $$('.tile').forEach(function(t){
+    t.addEventListener('pointermove',function(e){
+      var r=t.getBoundingClientRect();
+      t.style.setProperty('--mx',(e.clientX-r.left)+'px');
+      t.style.setProperty('--my',(e.clientY-r.top)+'px');
+    });
+  });
+
+  /* ---------- body map (five real states, IM/SubQ filter) ---------- */
+  var STATUS={ready:'#24C67E',resting:'#F6A623',used:'#F0596B',over:'#B389FF',never:'#22CCE0'};
+  var WORD={ready:'READY',resting:'RESTING',used:'USED TODAY',over:'OVERUSED',never:'NEVER USED'};
+  var NOTE={ready:'rested 4+ days',resting:'1 day since use',used:'logged 07:42',over:'needs longer rest',never:'no history yet'};
+  var FRONT=[
+    {id:'L-DELT',x:30.3,y:42.2,s:'ready',k:'im'},{id:'R-DELT',x:69.7,y:42.2,s:'used',k:'im'},
+    {id:'L-SHLDR',x:27,y:49.7,s:'ready',k:'sq'},{id:'R-SHLDR',x:73,y:49.7,s:'never',k:'sq'},
+    {id:'ABD-UL',x:42.8,y:78.3,s:'ready',k:'sq'},{id:'ABD-UR',x:57.2,y:78.3,s:'never',k:'sq'},
+    {id:'ABD-LL',x:43.7,y:91.3,s:'ready',k:'sq'},{id:'ABD-LR',x:56.3,y:91.3,s:'never',k:'sq'},
+    {id:'L-VL',x:37.8,y:103.8,s:'resting',k:'im'},{id:'R-VL',x:62.2,y:103.8,s:'ready',k:'im'},
+    {id:'L-THIGH',x:37,y:115.5,s:'ready',k:'sq'},{id:'R-THIGH',x:63,y:115.5,s:'resting',k:'sq'}
+  ];
+  var BACK=[
+    {id:'GLUTEFAT-L',x:39.7,y:92.3,s:'never',k:'sq'},{id:'GLUTEFAT-R',x:60.3,y:92.3,s:'ready',k:'sq'},
+    {id:'GLUTE-L',x:45.3,y:96.7,s:'ready',k:'im'},{id:'GLUTE-R',x:54.7,y:96.7,s:'over',k:'im'},
+    {id:'VG-L',x:38,y:102.5,s:'ready',k:'im'},{id:'VG-R',x:62,y:102.5,s:'resting',k:'im'}
+  ];
+  var g=$('#sites'), roDot=$('#roDot'), roText=$('#roText'), viewTag=$('#viewTag');
+  var cur=FRONT, kf='all', idx=0, holdUntil=0;
+
+  // stat tiles count across BOTH views, like the app
+  var all=FRONT.concat(BACK), counts={ready:0,resting:0,used:0,over:0,never:0};
+  all.forEach(function(s){counts[s.s]++});
+  $('#ctReady').textContent=counts.ready;
+  $('#ctResting').textContent=counts.resting;
+  $('#ctOver').textContent=counts.over;
+
+  function visible(i){var s=cur[i];return kf==='all'||s.k===kf}
+  function draw(){
+    g.innerHTML='';
+    cur.forEach(function(s,i){
+      var grp=document.createElementNS(NS,'g');
+      grp.setAttribute('class','site'+(visible(i)?'':' dim'));
+      var ring=document.createElementNS(NS,'circle');
+      ring.setAttribute('class','ring');
+      ring.setAttribute('cx',s.x);ring.setAttribute('cy',s.y);ring.setAttribute('r',6.5);
+      ring.setAttribute('stroke',STATUS[s.s]);
+      var halo=document.createElementNS(NS,'circle');
+      halo.setAttribute('class','halo');
+      halo.setAttribute('cx',s.x);halo.setAttribute('cy',s.y);halo.setAttribute('r',4.8);
+      var core=document.createElementNS(NS,'circle');
+      core.setAttribute('cx',s.x);core.setAttribute('cy',s.y);core.setAttribute('r',3);
+      core.setAttribute('fill',STATUS[s.s]);
+      grp.appendChild(ring);grp.appendChild(halo);grp.appendChild(core);
+      grp.addEventListener('pointerenter',function(){focusSite(i);holdUntil=Date.now()+6000});
+      grp.addEventListener('click',function(){focusSite(i);holdUntil=Date.now()+6000});
+      g.appendChild(grp);
+    });
+  }
+  function focusSite(i){
+    if(!visible(i)) return;
+    idx=i;
+    $$('.site',g).forEach(function(el){el.classList.remove('live')});
+    var el=g.children[i]; if(!el) return;
+    el.classList.add('live');
+    var s=cur[i];
+    roDot.style.background=STATUS[s.s];
+    roDot.style.boxShadow='0 0 8px '+STATUS[s.s];
+    roText.textContent=s.id+' · '+WORD[s.s]+' · '+NOTE[s.s];
+  }
+  function nextVisible(from){
+    for(var n=1;n<=cur.length;n++){var j=(from+n)%cur.length;if(visible(j))return j}
+    return from;
+  }
+  function cycle(){ if(Date.now()<holdUntil) return; focusSite(nextVisible(idx)); }
+  function setView(list,btnOn,btnOff,tag){
+    cur=list;draw();viewTag.textContent=tag;
+    var isFront=list===FRONT;
+    $('#figFront').style.display=isFront?'':'none';
+    $('#figBack').style.display=isFront?'none':'';
+    btnOn.classList.add('on');btnOff.classList.remove('on');
+    focusSite(nextVisible(cur.length-1));
+  }
+  function setFilter(v,btn){
+    kf=v;draw();
+    [$('#fAll'),$('#fIM'),$('#fSQ')].forEach(function(b){b.classList.remove('on')});
+    btn.classList.add('on');
+    focusSite(nextVisible(cur.length-1));
+  }
+  var bF=$('#vFront'),bB=$('#vBack');
+  bF.addEventListener('click',function(){setView(FRONT,bF,bB,'Anterior view')});
+  bB.addEventListener('click',function(){setView(BACK,bB,bF,'Posterior view')});
+  $('#fAll').addEventListener('click',function(){setFilter('all',this)});
+  $('#fIM').addEventListener('click',function(){setFilter('im',this)});
+  $('#fSQ').addEventListener('click',function(){setFilter('sq',this)});
+  draw();focusSite(0);
+  setInterval(cycle,2600);
+
+  /* ---------- scrollytelling ---------- */
+  var scrs=[$('#scr0'),$('#scr1'),$('#scr2')];
+  var so=new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      if(e.isIntersecting){
+        var i=+e.target.dataset.step;
+        scrs.forEach(function(s,j){s.classList.toggle('on',i===j)});
+      }
+    });
+  },{threshold:.55});
+  $$('.step').forEach(function(st){so.observe(st)});
+
+  /* ---------- calculator (real app logic: syringe calibrations) ---------- */
+  var SYR={
+    u100:{cap:1,  cal:100, name:'U-100 (1 mL)'},
+    u50 :{cap:.5, cal:100, name:'U-50 (0.5 mL)'},
+    u40 :{cap:1,  cal:40,  name:'U-40 (1 mL)'},
+    u30 :{cap:.3, cal:100, name:'U-30 (0.3 mL)'}
+  };
+  var sel='u100';
+  var vial=$('#vialIn'),water=$('#waterIn'),dose=$('#doseIn'),rng=$('#doseRange');
+  var outBig=$('#outBig'),outConc=$('#outConc'),warn=$('#calcWarn');
+  var syrName=$('#syrName'),fillPct=$('#fillPct');
+  var liquid=$('#sLiquid'),seal=$('#sSeal'),drip=$('#sDrip');
+  var ticks=$('#sTicks');
+  var BX=24,BW=200; // barrel geometry (matches the app SyringeSVG)
+
+  for(var i=0;i<=10;i++){
+    var x=BX+i*(BW/10);
+    var l=document.createElementNS(NS,'line');
+    l.setAttribute('class','tick');
+    l.setAttribute('x1',x);l.setAttribute('x2',x);
+    l.setAttribute('y1',18);l.setAttribute('y2',i%5===0?13:16);
+    ticks.appendChild(l);
+  }
+
+  function calc(){
+    var v=parseFloat(vial.value),w=parseFloat(water.value),d=parseFloat(dose.value);
+    rng.value=isFinite(d)?Math.min(d,1000):0;
+    rng.style.setProperty('--pct',(rng.value/10)+'%');
+    var S=SYR[sel];
+    syrName.textContent=S.name;
+    $('#sc0').textContent='0';
+    $('#scM').textContent=(S.cap/2).toString();
+    $('#scE').textContent=S.cap.toString();
+
+    if(!(v>0)||!(w>0)||!(d>0)){
+      outBig.textContent='—';outConc.textContent='— mg/mL';
+      setSyringe(0);fillPct.textContent='fills 0%';
+      $$('.sy').forEach(function(b){$('.v',b).textContent='—'});
+      warn.classList.remove('show');return;
+    }
+    var c=v/w, ml=d/(c*1000);
+    outBig.textContent=ml<10?ml.toFixed(3):ml.toFixed(1);
+    outConc.textContent=c.toFixed(2)+' mg/mL • '+Math.round(c*1000)+' mcg/mL';
+
+    $$('.sy').forEach(function(b){
+      var k=b.dataset.sy,sp=SYR[k],u=ml*sp.cal,capU=sp.cap*sp.cal;
+      $('.v',b).textContent=u.toFixed(2)+' u';
+      b.classList.toggle('over',u>capU);
+      var note=$('.note',b); if(note) note.style.display=(sp.cal!==100)?'block':'none';
+    });
+
+    var pct=ml/S.cap*100;
+    fillPct.textContent='fills '+(pct<10?pct.toFixed(1):Math.round(pct))+'%';
+    setSyringe(Math.max(0,Math.min(pct,100)));
+    warn.classList.toggle('show',ml>S.cap);
+  }
+  function setSyringe(pct){
+    var w=pct/100*BW;
+    liquid.setAttribute('width',Math.max(0,w));
+    var sx=BX+w-0.75;
+    seal.setAttribute('x',Math.max(BX,Math.min(sx,BX+BW-1.5)));
+    drip.setAttribute('cx',Math.max(BX+2,Math.min(BX+w,BX+BW-2)));
+  }
+  [vial,water,dose].forEach(function(el){el.addEventListener('input',calc)});
+  rng.addEventListener('input',function(){dose.value=rng.value;calc()});
+  $$('.sy').forEach(function(b){
+    b.addEventListener('click',function(){
+      sel=b.dataset.sy;
+      $$('.sy').forEach(function(o){o.classList.remove('on')});
+      b.classList.add('on');calc();
+    });
+  });
+  calc();
+})();
+</script>
 
 </body>
 </html>
