@@ -173,8 +173,13 @@
   .kicker{
     font-family:var(--mono);font-size:11.5px;letter-spacing:.22em;text-transform:uppercase;
     color:var(--accent);margin-bottom:20px;display:flex;align-items:center;gap:10px;
+    white-space:nowrap;
   }
-  .kicker::before{content:"";width:24px;height:1px;background:var(--accent-line)}
+  .kicker::before{content:"";width:24px;height:1px;background:var(--accent-line);flex:none}
+  @media(max-width:480px){
+    .kicker{font-size:9.5px;letter-spacing:.13em;gap:7px}
+    .kicker::before{width:16px}
+  }
   .hero h1{font-size:clamp(38px,6vw,62px);font-weight:700;letter-spacing:-.035em;line-height:1.03;margin-bottom:20px}
   .hero h1 em{font-style:normal;color:var(--accent);position:relative;white-space:nowrap}
   .hero h1 em::after{content:"";position:absolute;left:0;right:0;bottom:.04em;height:2px;background:var(--accent);opacity:.5;border-radius:2px}
